@@ -204,6 +204,8 @@ SGS, por bloco:
 | Câmbio | 1 | Dólar (venda), diário | 1984 |
 | Atividade | 24364 | IBC-Br com ajuste sazonal | 2003 |
 
+Conferido na coleta real da etapa 1: M1, PMPP e depósitos à vista têm o primeiro dado em jan/2002; M2 e M3, em ago/2001. M1 a M4 estão em R$ mil (M1 de R$ 0,65 trilhão e M4 de R$ 16,05 trilhões em set/2026). A identidade do PIB fecha sem resíduo em valores correntes quando se inclui a variação de estoques.
+
 Nas NFSP, sinal positivo é déficit. "Governo Federal e Banco Central" inclui o INSS e corresponde ao Governo Central.
 
 Códigos com dados conferidos, mas sem nome no catálogo **(confirmar o nome no site do SGS)**: 433 (IPCA mensal), 13522 (IPCA 12 meses), 4380 (PIB mensal em valores correntes), 3546 (reservas internacionais, mensal). Os valores recentes são coerentes com o esperado.
@@ -271,9 +273,10 @@ Decidido em 2026-11-18: página web pública para terceiros, desenvolvimento loc
 - **Painel**: site estático em HTML, CSS e JavaScript puro (módulos nativos do navegador, sem etapa de build, sem npm). Uma página por bloco da seção 7.
 - **Gráficos**: módulo próprio que desenha em SVG. Precisa cobrir linha, barras empilhadas, eixo de datas, dica ao passar o mouse ou tocar, seleção de período, linhas verticais de mudança de regime e trecho tracejado para projeções. É a parte mais trabalhosa de fazer em casa.
 - **Simulador de dívida**: roda inteiro no navegador, com a fórmula da seção 4.
-- **Coleta**: script Python separado do site, só com a biblioteca padrão (`urllib`, `json`), que grava um arquivo JSON por série em uma pasta `data/`. O site só lê esses arquivos e nunca chama as APIs durante uma visita. Assim o site continua no ar quando uma API do governo cai, e visitantes não geram chamadas externas.- **Sem servidor de aplicação**: como tudo que o visitante recebe é arquivo estático, basta um servidor de arquivos.
+- **Coleta**: script Python separado do site, só com a biblioteca padrão (`urllib`, `json`), que grava as observações em um banco SQLite (`data/economia.db`) e, ao fim de cada execução, exporta um arquivo JSON por série para `site/data/`, além de um `index.json` com nome, unidade e estado da última coleta de cada série. O site só lê esses arquivos e nunca chama as APIs durante uma visita. Assim o site continua no ar quando uma API do governo cai, e visitantes não geram chamadas externas.- **Sem servidor de aplicação**: como tudo que o visitante recebe é arquivo estático, basta um servidor de arquivos.
 - **Catálogo de séries**: um único arquivo (código, fonte, nome, unidade, frequência, regra de agregação). Adicionar um indicador é adicionar uma linha.
-- **Sem banco de dados e sem login**: os dados são públicos e cabem em arquivos.
+- **Banco de dados**: SQLite, pelo módulo `sqlite3` da biblioteca padrão. Duas tabelas: `series` (catálogo e estado da última coleta) e `observations` (série, data, valor e quando o valor entrou ou foi revisado). O banco fica fora de `site/` e não é servido ao público; o navegador não lê SQLite sem biblioteca de terceiros, por isso a exportação para JSON.
+- **Sem login**: os dados são públicos.
 
 Atualização dos dados:
 
@@ -286,13 +289,13 @@ Atualização dos dados:
 
 Desenvolvimento local:
 
-- Sem Docker e sem instalar nada: `python3 collect.py` para coletar e `python3 -m http.server` para abrir o site no navegador.
-- Escrever desde o início de forma compatível com contêiner: caminho da pasta de dados por variável de ambiente, nenhum caminho absoluto, endereços relativos no site.
+- Sem Docker e sem instalar nada: `python3 collector/collect.py` para coletar, `python3 -m unittest discover collector` para os testes e `python3 -m http.server` para abrir o site no navegador.
+- Escrever desde o início de forma compatível com contêiner: caminhos do banco e da pasta de exportação por variável de ambiente (`DB_PATH`, `EXPORT_DIR`), nenhum caminho absoluto, endereços relativos no site.
 
 Deploy futuro (Docker no servidor remoto):
 
 - Dois serviços no `docker compose`: `web` (servidor de arquivos estáticos com HTTPS, Caddy) e `collector` (imagem Python, executado por agendamento).
-- Volume compartilhado para a pasta `data/`: o `collector` escreve, o `web` só lê.
+- Dois volumes: o do banco (`data/`), visível só para o `collector`, e o da exportação (`site/data/`), em que o `collector` escreve e o `web` só lê.
 
 Consequências de ser público:
 
@@ -313,7 +316,7 @@ Custos conhecidos de fazer em casa:
 | Etapa | Entrega | Estimativa |
 |---|---|---|
 | 0 | Validar códigos das séries, a data de início de cada uma e baixar uma amostra de cada fonte. **Concluída em 2026-11-18**, com 5 itens "(confirmar)" restantes, nenhum bloqueante | meio dia |
-| 1 | Coletor + catálogo + arquivos JSON para os blocos 3.1 e 3.2 | 1 dia |
+| 1 | Coletor + catálogo + SQLite + exportação JSON para os blocos 3.1 e 3.2. **Concluída em 2026-11-18**: 56 séries, cerca de 27 mil observações, coleta completa em 1 minuto | 1 dia |
 | 1b | Módulo de gráficos em SVG e esqueleto do site (navegação, layout, celular) | 3 dias |
 | 2 | Páginas de Atividade e Moeda | 1 dia |
 | 3 | Bloco fiscal e dívida (dados do Tesouro são os mais trabalhosos) | 2 a 3 dias |
@@ -343,6 +346,8 @@ Resolvidas:
 - **Idioma do site**: só português na primeira versão (2026-11-18).
 
 - **Linguagem da coleta**: Python, só com a biblioteca padrão (2026-11-18).
+- **Armazenamento**: banco SQLite, com exportação em JSON para o site (2026-11-18).
+- **Fluxo de trabalho**: repositório privado no GitHub; cada feature em branch própria (2026-11-18).
 
 Em aberto:
 
