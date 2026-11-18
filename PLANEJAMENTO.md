@@ -289,7 +289,9 @@ Atualização dos dados:
 
 Desenvolvimento local:
 
-- Sem Docker e sem instalar nada: `python3 collector/collect.py` para coletar, `python3 -m unittest discover collector` para os testes e `python3 -m http.server` para abrir o site no navegador.
+- Sem Docker e sem instalar nada: `python3 collector/collect.py` para coletar, `python3 -m unittest discover collector` para os testes da coleta, `node --test` para os testes das contas do site (só exige o Node instalado, sem pacotes) e `python3 -m http.server --directory site` para abrir o site no navegador.
+- Estrutura do site: uma página HTML por bloco; `js/calc.js` (contas puras, testadas), `js/format.js` (formato brasileiro), `js/data.js` (leitura dos JSON), `js/chart.js` (gráficos) e um script por página em `js/pages/`.
+- Cores das séries: paleta de 4 cores validada para daltonismo nos temas claro e escuro. Um quinto componente em um mesmo gráfico exige revalidar.
 - Escrever desde o início de forma compatível com contêiner: caminhos do banco e da pasta de exportação por variável de ambiente (`DB_PATH`, `EXPORT_DIR`), nenhum caminho absoluto, endereços relativos no site.
 
 Deploy futuro (Docker no servidor remoto):
@@ -317,7 +319,7 @@ Custos conhecidos de fazer em casa:
 |---|---|---|
 | 0 | Validar códigos das séries, a data de início de cada uma e baixar uma amostra de cada fonte. **Concluída em 2026-11-18**, com 5 itens "(confirmar)" restantes, nenhum bloqueante | meio dia |
 | 1 | Coletor + catálogo + SQLite + exportação JSON para os blocos 3.1 e 3.2. **Concluída em 2026-11-18**: 56 séries, cerca de 27 mil observações, coleta completa em 1 minuto | 1 dia |
-| 1b | Módulo de gráficos em SVG e esqueleto do site (navegação, layout, celular) | 3 dias |
+| 1b | Módulo de gráficos em SVG e esqueleto do site (navegação, layout, celular). **Concluída em 2026-11-18**: gráficos de linha e de barras empilhadas, seletor de período, dica por mouse, toque e teclado, tabela de dados, temas claro e escuro; páginas Visão geral e Atividade | 3 dias |
 | 2 | Páginas de Atividade e Moeda | 1 dia |
 | 3 | Bloco fiscal e dívida (dados do Tesouro são os mais trabalhosos) | 2 a 3 dias |
 | 4 | Visão geral, externo e preços | 1 dia |
@@ -351,6 +353,7 @@ Resolvidas:
 
 Em aberto:
 
+0. **Nome do site**: "Painel Macro Brasil" é provisório, escolhido só para preencher o cabeçalho.
 1. **Servidor e domínio**: onde será hospedado e com qual endereço? Só bloqueia a etapa 7.
 
 ## 11. Fora do escopo (por enquanto)
