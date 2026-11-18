@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Visão geral · Painel Macro Brasil</title>
+  <meta name="description" content="Painel independente de acompanhamento das contas nacionais, da moeda e das contas públicas do Brasil, com dados do IBGE e do Banco Central.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="site-name" href="index.html">Painel Macro Brasil</a>
+      <nav aria-label="Seções">
+        <a href="index.html" aria-current="page">Visão geral</a>
+        <a href="atividade.html">Atividade</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h1>Visão geral</h1>
+    <p class="lead">Os números mais recentes da economia brasileira, com dados oficiais do IBGE e do Banco Central.</p>
+    <div class="tiles" id="tiles"></div>
+    <section class="card">
+      <h2>Seções</h2>
+      <p class="subtitle">Cada seção mostra a conta que fecha, e não só os gráficos.</p>
+      <p><a href="atividade.html">Atividade</a>: PIB e sua decomposição em consumo, investimento, governo e setor externo.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Projeto independente. Não é publicação oficial do governo.</p>
+      <p>Fontes: IBGE (Contas Nacionais Trimestrais) e Banco Central do Brasil (SGS). <span id="collected"></span></p>
+    </div>
+  </footer>
+  <script type="module" src="js/pages/index.js"></script>
+</body>
+</html>

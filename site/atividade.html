@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Atividade · Painel Macro Brasil</title>
+  <meta name="description" content="PIB do Brasil e sua decomposição pela ótica da despesa: consumo das famílias, investimento, governo e exportações líquidas.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="site-name" href="index.html">Painel Macro Brasil</a>
+      <nav aria-label="Seções">
+        <a href="index.html">Visão geral</a>
+        <a href="atividade.html" aria-current="page">Atividade</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h1>Atividade econômica</h1>
+    <p class="lead">O Produto Interno Bruto (PIB) é a soma de tudo o que o país produz. Pela ótica da despesa, ele se divide entre quem compra essa produção: famílias, empresas que investem, governo e o resto do mundo.</p>
+
+    <section class="card">
+      <h2>A conta do PIB: Y = C + I + G + (X − M)</h2>
+      <p class="subtitle" id="identity-subtitle">Valores correntes, em R$ bilhões.</p>
+      <div class="identity" id="identity"></div>
+      <p class="source">G é só o consumo do governo (salários e custeio). Não inclui aposentadorias, transferências nem juros; o investimento público está em I.</p>
+    </section>
+
+    <fieldset class="filters" id="period">
+      <legend>Período</legend>
+      <label><input type="radio" name="period" value="5"><span>5 anos</span></label>
+      <label><input type="radio" name="period" value="10" checked><span>10 anos</span></label>
+      <label><input type="radio" name="period" value="0"><span>Desde 1996</span></label>
+    </fieldset>
+
+    <section class="card">
+      <h2>Crescimento do PIB</h2>
+      <p class="subtitle">Variação real acumulada em 4 trimestres, em %, contra os 4 trimestres anteriores. As linhas verticais marcam mudanças de regime: câmbio flutuante (1999), Lei de Responsabilidade Fiscal (2000), teto de gastos (2016) e arcabouço fiscal (2023).</p>
+      <div class="chart" id="chart-growth"></div>
+      <p class="source" id="source-growth"></p>
+    </section>
+
+    <section class="card">
+      <h2>Quem compra o que o Brasil produz</h2>
+      <p class="subtitle">Participação de cada componente no PIB do trimestre, em % (valores correntes). Exportações líquidas negativas aparecem abaixo de zero.</p>
+      <div class="chart" id="chart-shares"></div>
+      <p class="source" id="source-shares"></p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Projeto independente. Não é publicação oficial do governo.</p>
+      <p>Fontes: IBGE (Contas Nacionais Trimestrais) e Banco Central do Brasil (SGS). <span id="collected"></span></p>
+    </div>
+  </footer>
+  <script type="module" src="js/pages/atividade.js"></script>
+</body>
+</html>
