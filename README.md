@@ -67,3 +67,9 @@ Os dados coletados ficam em volumes do Docker e não são afetados pela atualiza
 ## Acrescentar uma série
 
 Inclua uma linha em `collector/catalog.json` e rode a coleta. A série passa a existir em `site/data/<id>.json` e aparece na tabela da página de metodologia.
+
+## Licença
+
+O código deste repositório está sob a [licença MIT](LICENSE).
+
+Os dados não fazem parte do repositório: são coletados do IBGE, do Banco Central do Brasil e do Tesouro Nacional, que continuam sendo os responsáveis por eles. Quem reutilizar o painel deve citar essas fontes e observar as condições de uso de cada uma.

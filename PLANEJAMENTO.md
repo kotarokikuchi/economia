@@ -460,7 +460,7 @@ Resolvido em 2026-11-19, bloqueava a abertura:
 
 Pendente, não bloqueia:
 
-- **Licença**: não há arquivo de licença. Público sem licença, o código fica visível mas ninguém tem permissão legal de reutilizá-lo. Decidir entre manter assim ou adotar uma licença aberta.
+- **Licença**: MIT, adotada em 2026-11-19 (arquivo `LICENSE`). Vale para o código; os dados continuam sendo das fontes.
 - **Depois de abrir**: ligar a varredura de segredos com bloqueio de push e a proteção da branch `main`, que o GitHub só oferece de graça em repositórios públicos.
 - **Imagens Docker** fixadas por versão (`python:3.14-slim`, `caddy:2-alpine`), não por resumo criptográfico. Aceitável; fixar por resumo dá mais garantia e exige atualização manual.
 - **O que não foi feito**: varredura com ferramenta especializada, teste de invasão e teste do HTTPS em servidor real.
