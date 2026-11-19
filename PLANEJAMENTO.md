@@ -336,6 +336,14 @@ Deploy futuro (Docker no servidor remoto):
 - Dois serviços no `docker compose`: `web` (servidor de arquivos estáticos com HTTPS, Caddy) e `collector` (imagem Python, executado por agendamento).
 - Dois volumes: o do banco (`data/`), visível só para o `collector`, e o da exportação (`site/data/`), em que o `collector` escreve e o `web` só lê.
 
+Como ficou (2026-11-18), com o passo a passo de publicação no `README.md`:
+
+- Um `Dockerfile` com dois alvos: `collector` (Python, roda sem privilégios de root) e `web` (Caddy com o site copiado para dentro da imagem).
+- `compose.yaml`: o serviço `web` fica no ar; o `collector` está em um perfil à parte e só roda quando disparado, por `docker compose --profile collect run --rm collector`.
+- `Caddyfile`: com a variável `SITE_ADDRESS` vazia, responde em HTTP na porta 80; com um domínio, obtém o certificado HTTPS sozinho. Envia compressão, cache de 5 minutos para os dados e uma política de segurança de conteúdo que só permite arquivos do próprio site.
+- Verificado localmente: o banco não é alcançável pelo site (resposta 404), e os gráficos funcionam sob a política de segurança.
+- Não verificado, por falta de servidor e domínio: emissão do certificado HTTPS e a linha do agendador (`cron`).
+
 Consequências de ser público:
 
 - Cada gráfico mostra fonte, data de referência e data da coleta.
@@ -362,7 +370,7 @@ Custos conhecidos de fazer em casa:
 | 4 | Visão geral, externo e preços. **Concluída em 2026-11-18**: páginas Externo (5 gráficos) e Preços e juros (3 gráficos); Visão geral com 8 números e a tabela de expectativas do Focus; catálogo com 98 séries | 1 dia |
 | 5 | Simulador de dinâmica da dívida. **Concluída em 2026-11-18**: na página Dívida, com três controles (juro real, crescimento, primário), trajetória de 10 anos, primário que estabiliza a dívida e comparação com a expectativa do Focus | meio dia |
 | 6 | Página de metodologia, revisão de textos e leitura em celular. **Concluída em 2026-11-18**: página Metodologia e fontes, com a tabela das 98 séries gerada a partir da coleta; link "pular para o conteúdo", ícone do site e texto de fonte com contraste maior; as 8 páginas verificadas em 390 px e 1100 px | 1 dia |
-| 7 | Dockerfile, `docker compose`, agendamento da coleta e HTTPS no servidor | 1 dia |
+| 7 | Dockerfile, `docker compose`, agendamento da coleta e HTTPS no servidor. **Preparada e testada localmente em 2026-11-18**: imagens construídas, coleta de 98 séries dentro do contêiner, 8 páginas servidas pelo Caddy sem erros. Falta fazer no servidor, quando ele existir: ligar o HTTPS com o domínio e agendar a coleta | 1 dia |
 
 As etapas 0 a 6 acontecem todas na máquina local. A etapa 7 só começa quando houver servidor.
 
