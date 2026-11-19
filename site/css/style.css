@@ -145,3 +145,36 @@ button:focus-visible { outline: 2px solid var(--series-1); outline-offset: 2px; 
 .table-scroll.tall { max-height: 480px; }
 .table-view td { white-space: normal; }
 .table-view td:last-child { white-space: nowrap; }
+
+/* ----- simulador da economia ----- */
+.presets { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
+.sim-time { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-bottom: 4px; }
+.sim-time label { font-size: 14px; color: var(--text-2); }
+.sim-time output { color: var(--text-1); font-weight: 600; }
+.sim-time input { flex: 1 1 180px; accent-color: var(--series-1); }
+.machine { overflow-x: auto; }
+.machine:focus-visible { outline: 2px solid var(--series-1); outline-offset: 2px; border-radius: 4px; }
+.machine svg { display: block; width: 100%; min-width: 600px; max-width: 780px; height: auto; margin: 0 auto; }
+.machine text { font-size: 10.5px; fill: var(--text-1); paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; }
+.machine .tank-back { fill: var(--surface); }
+.machine .tank { fill: none; stroke: var(--text-2); stroke-width: 1.5; stroke-linejoin: round; }
+.machine .tank-mark { stroke: var(--text-2); stroke-width: 1; stroke-dasharray: 4 3; }
+.machine .water { fill: var(--series-1); fill-opacity: 0.5; }
+.machine .debt-water { fill: var(--series-2); fill-opacity: 0.6; }
+.machine .water, .machine .debt-water { transition: y 0.6s ease, height 0.6s ease; }
+.machine .tank-title { text-anchor: middle; font-weight: 700; letter-spacing: 0.02em; }
+.machine .tank-value { text-anchor: middle; font-size: 11.5px; font-weight: 600; }
+.machine .tank-delta { text-anchor: middle; fill: var(--text-2); }
+.machine .pipe { fill: none; stroke: var(--series-1); stroke-opacity: 0.45; stroke-linejoin: round; transition: stroke-width 0.6s ease; }
+.machine .pipe-flow { fill: none; stroke: var(--surface); stroke-opacity: 0.9; stroke-dasharray: 3 13; stroke-linecap: round; stroke-linejoin: round; }
+.machine .pipe-label { fill: var(--text-2); }
+.machine .pipe-value { font-weight: 600; }
+.machine .valve { fill: var(--surface); stroke: var(--text-1); stroke-width: 1.5; stroke-linejoin: round; }
+.machine .debt-link { fill: none; stroke: var(--series-2); stroke-width: 1.5; stroke-dasharray: 3 3; }
+.machine .pump { fill: var(--surface); stroke: var(--text-1); stroke-width: 1.5; }
+.machine .pump-arrow { fill: var(--text-1); }
+@media (prefers-reduced-motion: no-preference) {
+  .machine .pipe-flow { animation: flow 0.9s linear infinite; }
+}
+@keyframes flow { from { stroke-dashoffset: 16; } to { stroke-dashoffset: 0; } }
+.chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 0 16px; }

@@ -21,6 +21,7 @@
         <a href="divida.html">Dívida</a>
         <a href="externo.html">Externo</a>
         <a href="precos.html">Preços e juros</a>
+        <a href="simulador.html">Simulador</a>
       </nav>
     </div>
   </header>
@@ -83,6 +84,20 @@
         <li><strong>Composição da dívida e da despesa</strong>: mostrada ao fim de cada trimestre, para que as barras sejam legíveis. Os dados mensais estão na coleta.</li>
         <li><strong>Simulador de dívida</strong>: aplica um único juro real a toda a dívida e ignora variações cambiais, privatizações e operações do Banco Central. Parte da média das expectativas do Boletim Focus para os 4 anos seguintes.</li>
       </ul>
+    </section>
+
+    <section class="card">
+      <h2>Simulador da economia</h2>
+      <p class="subtitle">O <a href="simulador.html">simulador de tanques</a> é um modelo didático, inspirado na máquina hidráulica de Bill Phillips (1949).</p>
+      <ul class="glossary">
+        <li><strong>Ponto de partida</strong>: os fluxos do PIB nos últimos 4 trimestres, a Selic, a inflação em 12 meses, a meta de inflação, a dívida bruta, o resultado primário, os juros nominais e o câmbio mais recentes. O crescimento de referência é o que o Boletim Focus espera no horizonte mais longo.</li>
+        <li><strong>Impostos</strong>: calculados como o gasto do governo mais o resultado primário de hoje. São impostos líquidos de aposentadorias e benefícios, e combinam o consumo dos três níveis de governo com o resultado primário do Governo Central.</li>
+        <li><strong>Juro da dívida</strong>: o juro médio de partida é a conta de juros de 12 meses sobre a dívida de um ano antes. A parcela da dívida atrelada à Selic repassa de imediato as mudanças na Selic.</li>
+        <li><strong>Selic</strong>: a válvula fixa o juro real. Nos anos seguintes, a Selic acompanha a inflação esperada.</li>
+        <li><strong>Sem mudanças</strong>: mantém por 10 anos o juro real e o resultado primário de hoje. Não é o cenário que o mercado espera.</li>
+      </ul>
+      <p class="subtitle">As sensibilidades abaixo são valores didáticos, escolhidos para dar direção e ordem de grandeza plausíveis. Não foram estimadas com os dados.</p>
+      <div class="table-view"><table id="params"></table></div>
     </section>
 
     <section class="card">

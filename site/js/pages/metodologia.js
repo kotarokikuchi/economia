@@ -1,5 +1,6 @@
 import { loadIndex } from '../data.js';
-import { fmtPeriod } from '../format.js';
+import { fmtNumber, fmtPeriod } from '../format.js';
+import { PARAM_NOTES, PARAMS } from '../model.js';
 import { run, showCollected } from './common.js';
 
 const FREQUENCY = { D: 'diária', M: 'mensal', Q: 'trimestral', A: 'anual' };
@@ -26,6 +27,17 @@ run(async () => {
     cell(row, 'td', FREQUENCY[s.freq] ?? s.freq);
     const collected = s.ok_at ? fmtPeriod(s.ok_at, 'D') : 'nunca';
     cell(row, 'td', s.error ? `${collected} (última tentativa falhou)` : collected);
+  }
+
+  const params = document.getElementById('params');
+  const paramsHead = params.createTHead().insertRow();
+  cell(paramsHead, 'th', 'Sensibilidade');
+  cell(paramsHead, 'th', 'Valor');
+  const paramsBody = params.createTBody();
+  for (const [key, note] of Object.entries(PARAM_NOTES)) {
+    const row = paramsBody.insertRow();
+    cell(row, 'th', note);
+    cell(row, 'td', fmtNumber(PARAMS[key], 2));
   }
 
   const failed = series.filter((s) => s.error).length;

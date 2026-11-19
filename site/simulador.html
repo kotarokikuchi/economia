@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simulador · Painel Macro Brasil</title>
+  <meta name="description" content="Simulador da economia brasileira em tanques interligados: mexa em juros, impostos, gasto público, dólar e crescimento mundial e veja o efeito sobre renda, inflação e dívida.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%232a78d6'/%3E%3Cpath d='M3 12V8h2v4zm4 0V4h2v8zm4 0V6h2v6z' fill='%23fff'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip" href="#conteudo">Pular para o conteúdo</a>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="site-name" href="index.html">Painel Macro Brasil</a>
+      <nav aria-label="Seções">
+        <a href="index.html">Visão geral</a>
+        <a href="atividade.html">Atividade</a>
+        <a href="moeda.html">Moeda</a>
+        <a href="fiscal.html">Fiscal</a>
+        <a href="divida.html">Dívida</a>
+        <a href="externo.html">Externo</a>
+        <a href="precos.html">Preços e juros</a>
+        <a href="simulador.html" aria-current="page">Simulador</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap" id="conteudo">
+    <h1>Simulador da economia</h1>
+    <p class="lead">A economia como uma máquina de água. A renda do país escoa para famílias, governo, poupança e exterior, e tudo o que é gasto volta ao topo como a renda do ano seguinte. Abra e feche as válvulas e veja o que acontece.</p>
+
+    <section class="card">
+      <h2>As válvulas</h2>
+      <p class="subtitle">Cada uma parte do valor de hoje. Os atalhos montam cenários prontos.</p>
+      <p class="presets">
+        <button type="button" data-preset="rates">Juros mais altos</button>
+        <button type="button" data-preset="austerity">Ajuste fiscal</button>
+        <button type="button" data-preset="spending">Governo gasta mais</button>
+        <button type="button" data-preset="dollar">Dólar dispara</button>
+        <button type="button" data-preset="world">Crise mundial</button>
+        <button type="button" data-preset="today">Voltar ao Brasil de hoje</button>
+      </p>
+      <div class="sim-controls">
+        <label for="lever-selic">Selic (juros básicos) <output id="lever-selic-out" for="lever-selic"></output></label>
+        <input type="range" id="lever-selic" min="4" max="24" step="0.25" value="12">
+        <label for="lever-tax">Impostos <output id="lever-tax-out" for="lever-tax"></output></label>
+        <input type="range" id="lever-tax" min="-3" max="3" step="0.1" value="0">
+        <label for="lever-spending">Gasto do governo <output id="lever-spending-out" for="lever-spending"></output></label>
+        <input type="range" id="lever-spending" min="-15" max="15" step="1" value="0">
+        <label for="lever-fx">Dólar <output id="lever-fx-out" for="lever-fx"></output></label>
+        <input type="range" id="lever-fx" min="3.5" max="9" step="0.01" value="5.5">
+        <label for="lever-world">Crescimento do mundo <output id="lever-world-out" for="lever-world"></output></label>
+        <input type="range" id="lever-world" min="0" max="6" step="0.1" value="3">
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>A máquina</h2>
+      <p class="subtitle">A espessura de cada cano mostra o tamanho do fluxo, e cada gota no alto é um ponto de inflação. Em cada tanque, a linha tracejada marca onde a água estaria se nada mudasse; no tanque laranja, o da dívida pública, ela marca o nível de hoje.</p>
+      <div class="sim-time">
+        <button type="button" id="play">Simular 10 anos</button>
+        <label for="year">Ano <output id="year-out" for="year"></output></label>
+        <input type="range" id="year" min="0" max="10" step="1" value="5">
+      </div>
+      <p class="sim-result" id="summary" aria-live="polite"></p>
+      <div class="machine" id="machine" tabindex="0" role="group" aria-label="Diagrama de tanques da economia. Os mesmos números estão nos quadros e nas tabelas abaixo."></div>
+    </section>
+
+    <div class="tiles" id="tiles"></div>
+
+    <div class="chart-grid">
+      <section class="card">
+        <h2>Crescimento do PIB</h2>
+        <p class="subtitle">Variação real ao ano, em %.</p>
+        <div class="chart" id="chart-growth"></div>
+      </section>
+      <section class="card">
+        <h2>Inflação</h2>
+        <p class="subtitle">Em % ao ano. A meta é o ponto para onde a inflação tende quando a economia não está aquecida nem ociosa.</p>
+        <div class="chart" id="chart-inflation"></div>
+      </section>
+      <section class="card">
+        <h2>Dívida pública</h2>
+        <p class="subtitle">Dívida bruta em % do PIB. A linha do mercado supõe juros em queda nos próximos anos; a simulação mantém o juro real escolhido.</p>
+        <div class="chart" id="chart-debt"></div>
+      </section>
+      <section class="card">
+        <h2>Resultado primário</h2>
+        <p class="subtitle">Em % do PIB. Abaixo de zero é déficit.</p>
+        <div class="chart" id="chart-primary"></div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>Como a máquina funciona</h2>
+      <ul class="glossary">
+        <li><strong>Famílias</strong>: do que sobra da renda depois dos impostos, uma parte vira consumo e o resto vira poupança. Juros altos e dólar caro reduzem o consumo.</li>
+        <li><strong>Investimento</strong>: sai do tanque da poupança. A válvula da Selic regula a passagem: juros mais altos, menos investimento.</li>
+        <li><strong>Governo</strong>: recebe os impostos e gasta. Se gasta mais do que recebe, puxa a diferença da poupança, e sobra menos para o investimento no ano seguinte.</li>
+        <li><strong>Dívida</strong>: cresce com o déficit e com os juros, e encolhe em proporção do PIB quando a economia cresce. Cerca de metade da dívida acompanha a Selic de imediato.</li>
+        <li><strong>Exterior</strong>: dólar mais caro barateia o que o Brasil vende e encarece o que compra; o mundo crescendo mais puxa as exportações.</li>
+        <li><strong>Inflação</strong>: quando a água passa da capacidade dos canos, transborda em preços. Dólar mais caro também a empurra. Inflação alta por muito tempo encarece os produtos brasileiros lá fora.</li>
+        <li><strong>Selic nos anos seguintes</strong>: a válvula fixa o juro real. Depois do primeiro ano, a Selic sobe e desce junto com a inflação esperada.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>O que este simulador é, e o que não é</h2>
+      <ul class="glossary">
+        <li><strong>O ponto de partida é real</strong>: tamanho de cada fluxo, Selic, inflação, dívida, resultado primário e câmbio vêm dos dados mais recentes do IBGE e do Banco Central.</li>
+        <li><strong>As reações são didáticas</strong>: quanto o investimento cai quando o juro sobe, por exemplo, é um valor de livro-texto, não uma estimativa feita com os dados. O simulador mostra a direção e a ordem de grandeza dos efeitos.</li>
+        <li><strong>Não é previsão</strong>: o cenário "sem mudanças" mantém por 10 anos o juro real e o resultado primário de hoje. Por isso a dívida sobe mais do que o mercado espera.</li>
+        <li><strong>"Impostos"</strong> são os impostos já descontados das aposentadorias e benefícios que voltam às famílias, e o governo aqui inclui estados e municípios. Por isso o número é menor que a carga tributária.</li>
+        <li><strong>Inspiração</strong>: a máquina hidráulica construída pelo economista Bill Phillips em 1949, que simulava uma economia com água de verdade.</li>
+      </ul>
+      <p class="source">As sensibilidades usadas estão listadas na página <a href="metodologia.html">Metodologia e fontes</a>.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Projeto independente. Não é publicação oficial do governo. <a href="metodologia.html">Metodologia e fontes</a></p>
+      <p>Ponto de partida: dados do IBGE e do Banco Central do Brasil. <span id="collected"></span></p>
+    </div>
+  </footer>
+  <script type="module" src="js/pages/simulador.js"></script>
+</body>
+</html>
