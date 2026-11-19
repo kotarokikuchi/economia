@@ -145,3 +145,18 @@ export function simulate(base, levers, years = 10, params = PARAMS) {
   }
   return path;
 }
+
+/**
+ * Valor da alavanca `key`, entre lo e hi, que leva metric(estado do ano t) o mais perto possível de target.
+ * Supõe que a medida só sobe ou só desce com a alavanca. Fora do alcance, devolve o extremo mais próximo.
+ */
+export function solveLever(base, levers, key, [lo, hi], metric, target, t, years = 10) {
+  const at = (value) => metric(simulate(base, { ...levers, [key]: value }, years)[t]);
+  const rising = at(hi) > at(lo);
+  let [a, b] = [lo, hi];
+  for (let i = 0; i < 30; i++) {
+    const mid = (a + b) / 2;
+    if ((at(mid) < target) === rising) a = mid; else b = mid;
+  }
+  return (a + b) / 2;
+}

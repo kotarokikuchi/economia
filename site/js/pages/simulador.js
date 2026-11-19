@@ -2,7 +2,7 @@ import { rolling12 } from '../calc.js';
 import { mount, update } from '../chart.js';
 import { loadIndex, loadSeries } from '../data.js';
 import { fmtNumber } from '../format.js';
-import { calibrate, simulate, todayLevers } from '../model.js';
+import { calibrate, simulate, solveLever, todayLevers } from '../model.js';
 import { run, showCollected } from './common.js';
 
 const NS = 'http://www.w3.org/2000/svg';
@@ -29,9 +29,16 @@ function versus(value, reference, unit = '%') {
 
 // Altura da marca "sem mudanças" nos tanques: abaixo do meio, para não cruzar os textos.
 const REFERENCE_LEVEL = 0.4;
+// Quanto cada tanque varia entre vazio e o dobro da marca (fração do valor sem mudanças).
+const RANGE = { income: 0.08, government: 0.2, credit: 0.25, families: 0.08, investment: 0.25 };
+// No tanque do exterior, a altura inteira corresponde a esta variação do saldo externo, em pontos do PIB.
+const ABROAD_SPAN = 8;
 
-/** Tanque com líquido. funnel: fundo afunilado; devolve funções para atualizar nível e textos. */
-function makeTank(root, { id, x, y, w, h, funnel = true, title, kind = 'water' }) {
+/**
+ * Tanque com líquido. funnel: fundo afunilado. drag: { label, hint, onDrag(fração), onStep(±1) } torna o
+ * nível arrastável (mouse, toque e setas do teclado). Devolve a função que atualiza nível e textos.
+ */
+function makeTank(root, { id, x, y, w, h, funnel = true, title, kind = 'water', drag }) {
   const cx = x + w / 2;
   const shoulder = y + h * 0.62;
   const d = funnel
@@ -45,12 +52,50 @@ function makeTank(root, { id, x, y, w, h, funnel = true, title, kind = 'water' }
   svg('text', { x: cx, y: y + 16, class: 'tank-title' }, root, title);
   const value = svg('text', { x: cx, y: y + 32, class: 'tank-value' }, root);
   const delta = svg('text', { x: cx, y: y + 46, class: 'tank-delta' }, root);
+
+  let grip = null;
+  let hit = null;
+  if (drag) {
+    grip = svg('circle', { cx: x + w, cy: y + h / 2, r: 5.5, class: 'grip' }, root); // na parede do tanque, fora dos textos
+    hit = svg('rect', {
+      x, y, width: w, height: h, class: 'tank-hit', tabindex: 0, role: 'slider',
+      'aria-orientation': 'vertical', 'aria-label': drag.label, 'aria-valuemin': 0, 'aria-valuemax': 100,
+    }, root);
+    svg('title', {}, hit, drag.hint);
+    const fractionAt = (event) => {
+      const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(root.getScreenCTM().inverse());
+      return Math.min(0.98, Math.max(0.02, 1 - (point.y - y) / h));
+    };
+    hit.addEventListener('pointerdown', (event) => {
+      hit.setPointerCapture(event.pointerId);
+      root.classList.add('dragging'); // sem transição: a água acompanha o dedo
+      drag.onDrag(fractionAt(event));
+    });
+    hit.addEventListener('pointermove', (event) => {
+      if (hit.hasPointerCapture(event.pointerId)) drag.onDrag(fractionAt(event));
+    });
+    const release = () => root.classList.remove('dragging');
+    hit.addEventListener('pointerup', release);
+    hit.addEventListener('pointercancel', release);
+    hit.addEventListener('keydown', (event) => {
+      const direction = { ArrowUp: 1, ArrowDown: -1 }[event.key];
+      if (!direction) return;
+      event.preventDefault();
+      drag.onStep(direction);
+    });
+  }
+
   return {
+    fraction: REFERENCE_LEVEL,
     /** fraction: 0 = vazio, 1 = cheio. markFraction: onde fica a marca de referência. */
     set(fraction, valueText, deltaText, markFraction = REFERENCE_LEVEL) {
+      this.fraction = fraction;
       const level = Math.min(0.96, Math.max(0.06, fraction));
       liquid.setAttribute('y', y + h * (1 - level));
       liquid.setAttribute('height', h * level);
+      grip?.setAttribute('cy', y + h * (1 - level));
+      hit?.setAttribute('aria-valuenow', Math.round(level * 100));
+      hit?.setAttribute('aria-valuetext', `${valueText}, ${deltaText}`);
       mark.setAttribute('y1', y + h * (1 - markFraction));
       mark.setAttribute('y2', y + h * (1 - markFraction));
       value.textContent = valueText;
@@ -90,7 +135,7 @@ function makeLabel(root, x, y, title, anchor = 'start') {
   };
 }
 
-function buildMachine(container) {
+function buildMachine(container, drag) {
   const root = svg('svg', { viewBox: '0 0 640 612', role: 'img', 'aria-labelledby': 'machine-desc' }, container);
   const desc = svg('desc', { id: 'machine-desc' }, root);
 
@@ -114,11 +159,11 @@ function buildMachine(container) {
 
   const tanks = {
     income: makeTank(root, { id: 'income', x: 60, y: 14, w: 410, h: 92, funnel: false, title: 'RENDA DO PAÍS (PIB)' }),
-    government: makeTank(root, { id: 'government', x: 60, y: 196, w: 100, h: 96, title: 'GOVERNO (G)' }),
+    government: makeTank(root, { id: 'government', x: 60, y: 196, w: 100, h: 96, title: 'GOVERNO (G)', drag: drag.government }),
     credit: makeTank(root, { id: 'credit', x: 200, y: 196, w: 100, h: 96, title: 'POUPANÇA' }),
-    families: makeTank(root, { id: 'families', x: 350, y: 196, w: 100, h: 96, title: 'FAMÍLIAS (C)' }),
-    abroad: makeTank(root, { id: 'abroad', x: 500, y: 196, w: 100, h: 96, title: 'EXTERIOR' }),
-    investment: makeTank(root, { id: 'investment', x: 200, y: 372, w: 100, h: 96, title: 'INVESTIMENTO (I)' }),
+    families: makeTank(root, { id: 'families', x: 350, y: 196, w: 100, h: 96, title: 'FAMÍLIAS (C)', drag: drag.families }),
+    abroad: makeTank(root, { id: 'abroad', x: 500, y: 196, w: 100, h: 96, title: 'EXTERIOR', drag: drag.abroad }),
+    investment: makeTank(root, { id: 'investment', x: 200, y: 372, w: 100, h: 96, title: 'INVESTIMENTO (I)', drag: drag.investment }),
     debt: makeTank(root, { id: 'debt', x: 28, y: 372, w: 66, h: 130, funnel: false, title: 'DÍVIDA', kind: 'debt-water' }),
   };
 
@@ -160,12 +205,12 @@ function drawMachine(machine, s, ref, levers, base) {
   const level = (value, reference, range) => REFERENCE_LEVEL * (1 + (value / reference - 1) / range);
   const ofGdp = (flow) => `${pct(share(flow) * 100)} do PIB`;
 
-  tanks.income.set(level(s.Y, ref.Y, 0.08), `R$ ${fmtNumber(s.Y / 1000, 2)} trilhões · cresce ${pct(s.growth)}`, versus(s.Y, ref.Y));
-  tanks.government.set(level(s.G, ref.G, 0.2), ofGdp(s.G), versus(s.G, ref.G));
-  tanks.credit.set(level(savings, refSavings, 0.25), ofGdp(savings), versus(savings, refSavings));
-  tanks.families.set(level(s.C, ref.C, 0.08), ofGdp(s.C), versus(s.C, ref.C));
-  tanks.investment.set(level(s.I, ref.I, 0.25), ofGdp(s.I), versus(s.I, ref.I));
-  tanks.abroad.set(REFERENCE_LEVEL - (s.current - ref.current) / 8, `saldo ${pct(s.current)}`, versus(s.current, ref.current, 'pp'));
+  tanks.income.set(level(s.Y, ref.Y, RANGE.income), `R$ ${fmtNumber(s.Y / 1000, 2)} trilhões · cresce ${pct(s.growth)}`, versus(s.Y, ref.Y));
+  tanks.government.set(level(s.G, ref.G, RANGE.government), ofGdp(s.G), versus(s.G, ref.G));
+  tanks.credit.set(level(savings, refSavings, RANGE.credit), ofGdp(savings), versus(savings, refSavings));
+  tanks.families.set(level(s.C, ref.C, RANGE.families), ofGdp(s.C), versus(s.C, ref.C));
+  tanks.investment.set(level(s.I, ref.I, RANGE.investment), ofGdp(s.I), versus(s.I, ref.I));
+  tanks.abroad.set(REFERENCE_LEVEL - (s.current - ref.current) / ABROAD_SPAN, `saldo ${pct(s.current)}`, versus(s.current, ref.current, 'pp'));
   tanks.debt.set(s.debt / 200, pct(s.debt), 'do PIB', base.debt / 200);
 
   pipes.back.set(0.7);
@@ -239,7 +284,21 @@ run(async () => {
 
   const inputs = Object.fromEntries(Object.keys(LEVERS).map((key) => [key, document.getElementById(`lever-${key}`)]));
   const yearInput = document.getElementById('year');
-  const machine = buildMachine(document.getElementById('machine'));
+  // Tanques arrastáveis: cada um move a válvula que mais diretamente controla o seu nível.
+  const DRAG = {
+    government: { lever: 'spending', metric: (s) => s.G, name: 'Governo', moves: 'o gasto do governo' },
+    families: { lever: 'tax', metric: (s) => s.C, name: 'Famílias', moves: 'os impostos' },
+    investment: { lever: 'selic', metric: (s) => s.I, name: 'Investimento', moves: 'a Selic' },
+    abroad: { lever: 'fx', metric: (s) => s.current, name: 'Exterior', moves: 'o dólar' },
+  };
+  const machine = buildMachine(document.getElementById('machine'), Object.fromEntries(
+    Object.entries(DRAG).map(([name, tank]) => [name, {
+      label: `Nível do tanque ${tank.name}: arraste ou use as setas para cima e para baixo para mudar ${tank.moves}`,
+      hint: `Arraste a água para mudar ${tank.moves}`,
+      onDrag: (fraction) => dragTank(name, fraction),
+      onStep: (direction) => dragTank(name, machine.tanks[name].fraction + direction * 0.04),
+    }]),
+  ));
   const charts = {
     growth: document.getElementById('chart-growth'),
     inflation: document.getElementById('chart-inflation'),
@@ -311,6 +370,22 @@ run(async () => {
     for (const [key, spec] of Object.entries(specs(path))) (mounted ? update : mount)(charts[key], spec);
     mounted = true;
     drawYear();
+  }
+
+  /** Leva o tanque ao nível pedido, procurando o valor da válvula que produz esse nível no ano mostrado. */
+  function dragTank(name, fraction) {
+    stop();
+    if (Number(yearInput.value) === 0) yearInput.value = 1; // o retrato de hoje não muda; o efeito aparece a partir do ano seguinte
+    const t = Number(yearInput.value);
+    const { lever, metric } = DRAG[name];
+    const target = name === 'abroad'
+      ? reference[t].current - (fraction - REFERENCE_LEVEL) * ABROAD_SPAN
+      : metric(reference[t]) * (1 + (fraction / REFERENCE_LEVEL - 1) * RANGE[name]);
+    const input = inputs[lever];
+    const step = Number(input.step);
+    const value = solveLever(base, readLevers(), lever, [Number(input.min), Number(input.max)], metric, target, t, YEARS);
+    input.value = Math.round(value / step) * step;
+    recompute();
   }
 
   function setLevers(values) {

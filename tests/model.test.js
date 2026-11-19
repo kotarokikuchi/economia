@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { calibrate, simulate, todayLevers } from '../site/js/model.js';
+import { calibrate, simulate, solveLever, todayLevers } from '../site/js/model.js';
 
 // Economia fictícia em números redondos; Y = C + I + G + X - M fecha exatamente.
 const base = calibrate({
@@ -89,4 +89,17 @@ test('alavancas no extremo não produzem números impossíveis', () => {
       assert.ok(s.inflation >= -2 && s.inflation <= 40);
     }
   }
+});
+
+test('solveLever acha a alavanca que leva um tanque ao nível pedido', () => {
+  // gasto do governo: o alvo é 6% acima do cenário sem mudanças, no ano 3
+  const target = run()[3].G * 1.06;
+  near(solveLever(base, today, 'spending', [-15, 15], (s) => s.G, target, 3), 6, 1e-4);
+
+  // investimento desce quando a Selic sobe: a busca funciona nos dois sentidos
+  const invested = run({ selic: 9 })[5].I;
+  near(solveLever(base, today, 'selic', [4, 24], (s) => s.I, invested, 5), 9, 1e-4);
+
+  // alvo fora do alcance: fica no extremo
+  near(solveLever(base, today, 'spending', [-15, 15], (s) => s.G, run()[3].G * 2, 3), 15, 1e-4);
 });
