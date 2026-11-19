@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Metodologia · Painel Macro Brasil</title>
+  <meta name="description" content="Como este painel coleta e calcula os dados: fontes oficiais, fórmulas, aproximações e a lista completa de séries usadas.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%232a78d6'/%3E%3Cpath d='M3 12V8h2v4zm4 0V4h2v8zm4 0V6h2v6z' fill='%23fff'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip" href="#conteudo">Pular para o conteúdo</a>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="site-name" href="index.html">Painel Macro Brasil</a>
+      <nav aria-label="Seções">
+        <a href="index.html">Visão geral</a>
+        <a href="atividade.html">Atividade</a>
+        <a href="moeda.html">Moeda</a>
+        <a href="fiscal.html">Fiscal</a>
+        <a href="divida.html">Dívida</a>
+        <a href="externo.html">Externo</a>
+        <a href="precos.html">Preços e juros</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap" id="conteudo">
+    <h1>Metodologia e fontes</h1>
+    <p class="lead">De onde vêm os números deste painel, como são calculados e o que eles não mostram.</p>
+
+    <section class="card">
+      <h2>O que é este painel</h2>
+      <p>Um projeto independente que reúne, em um só lugar, estatísticas oficiais sobre a economia e as contas do governo federal brasileiro. Não é uma publicação do governo, do IBGE, do Banco Central nem do Tesouro Nacional, e não substitui as publicações desses órgãos.</p>
+      <p>O painel não faz previsões nem recomendações de investimento. As expectativas mostradas são as do mercado, coletadas pelo Banco Central; o simulador de dívida é um exercício de aritmética.</p>
+    </section>
+
+    <section class="card">
+      <h2>Fontes</h2>
+      <ul class="glossary">
+        <li><strong>IBGE</strong>: Contas Nacionais Trimestrais, pelo <a href="https://sidra.ibge.gov.br/">Sistema IBGE de Recuperação Automática (SIDRA)</a>. PIB e seus componentes.</li>
+        <li><strong>Banco Central do Brasil</strong>: <a href="https://www3.bcb.gov.br/sgspub/">Sistema Gerenciador de Séries Temporais (SGS)</a>. Moeda, resultado fiscal, dívida, contas externas, juros, câmbio e inflação (o IPCA é do IBGE, obtido por essa via).</li>
+        <li><strong>Banco Central do Brasil</strong>: <a href="https://www.bcb.gov.br/publicacoes/focus">Boletim Focus</a>. Mediana das expectativas de instituições financeiras.</li>
+        <li><strong>Tesouro Nacional</strong>: série histórica do Resultado do Tesouro Nacional (RTN), no <a href="https://www.tesourotransparente.gov.br/">Tesouro Transparente</a>. Receitas e despesas do Governo Central.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Atualização</h2>
+      <ul class="glossary">
+        <li>Os dados são coletados das fontes uma vez por dia. Cada gráfico informa o último período disponível e a data da coleta.</li>
+        <li>Quando uma fonte revisa um número já publicado, o painel passa a mostrar o valor revisado.</li>
+        <li>Se uma fonte estiver fora do ar, o painel continua mostrando o último dado coletado com sucesso. A situação de cada série está na tabela ao fim desta página.</li>
+        <li>As fontes publicam com atrasos diferentes: o PIB sai cerca de dois meses depois do fim do trimestre; os dados fiscais e monetários, cerca de um mês depois. Por isso os gráficos de uma mesma página podem terminar em meses diferentes.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>As contas</h2>
+      <p class="subtitle">As identidades contábeis que o painel mostra com os valores no lugar dos símbolos.</p>
+      <ul class="glossary">
+        <li><strong>PIB pela ótica da despesa</strong>: Y = C + I + G + (X − M). Consumo das famílias, investimento (formação bruta de capital fixo mais variação de estoques), consumo do governo e exportações menos importações.</li>
+        <li><strong>Base monetária</strong>: papel-moeda emitido + reservas bancárias.</li>
+        <li><strong>M1</strong>: papel-moeda em poder do público + depósitos à vista.</li>
+        <li><strong>Multiplicador monetário</strong>: M1 ÷ base monetária.</li>
+        <li><strong>Velocidade de circulação</strong>: PIB em 12 meses ÷ M1, da equação de trocas M · V = P · Y.</li>
+        <li><strong>Resultado nominal</strong>: resultado primário − juros nominais.</li>
+        <li><strong>Resultado primário</strong>: receita líquida − despesa primária total.</li>
+        <li><strong>Juro real</strong>: (1 + juro nominal) ÷ (1 + inflação) − 1.</li>
+        <li><strong>Dinâmica da dívida</strong>: dívida do ano seguinte = dívida × (1 + juro real) ÷ (1 + crescimento do PIB) − resultado primário, tudo em proporção do PIB.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Cálculos próprios e aproximações</h2>
+      <p class="subtitle">Parte dos números é calculada pelo painel a partir dos dados das fontes. Estes são os casos:</p>
+      <ul class="glossary">
+        <li><strong>Acumulado em 12 meses e em 4 trimestres</strong>: soma dos fluxos do período. Elimina a oscilação que se repete todo ano, como o 13º salário em dezembro.</li>
+        <li><strong>Valores em % do PIB</strong>: quando a fonte não publica a proporção, o painel divide pelo PIB acumulado em 12 meses, estimado mensalmente pelo Banco Central.</li>
+        <li><strong>Contribuição ao crescimento do PIB</strong>: peso do componente no PIB de um ano antes, multiplicado pelo seu crescimento real. É uma aproximação; a diferença para o crescimento oficial aparece como "Estoques e resíduo".</li>
+        <li><strong>Sinal do resultado fiscal</strong>: o Banco Central publica a necessidade de financiamento, em que déficit é positivo. O painel inverte o sinal, para que déficit apareça como número negativo.</li>
+        <li><strong>Juro real esperado</strong>: meta Selic do fim do mês descontada da inflação que o mercado espera para os 12 meses seguintes. O cálculo usual do mercado usa a taxa de contratos futuros de juros de um ano.</li>
+        <li><strong>Composição da dívida e da despesa</strong>: mostrada ao fim de cada trimestre, para que as barras sejam legíveis. Os dados mensais estão na coleta.</li>
+        <li><strong>Simulador de dívida</strong>: aplica um único juro real a toda a dívida e ignora variações cambiais, privatizações e operações do Banco Central. Parte da média das expectativas do Boletim Focus para os 4 anos seguintes.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>De que governo se está falando</h2>
+      <ul class="glossary">
+        <li><strong>Governo Central</strong>: Tesouro Nacional, Previdência Social (INSS) e Banco Central. É o recorte da página Fiscal.</li>
+        <li><strong>Governo Geral</strong>: União, estados e municípios. É o recorte da Dívida Bruta do Governo Geral.</li>
+        <li><strong>Setor Público Consolidado</strong>: Governo Geral, Banco Central e empresas estatais. É o recorte da Dívida Líquida do Setor Público.</li>
+        <li><strong>Consumo do governo no PIB (G)</strong>: só salários e custeio dos três níveis de governo. Não inclui aposentadorias, transferências nem juros, e por isso é bem menor que a despesa pública.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>O que este painel não mostra</h2>
+      <ul class="glossary">
+        <li>Comparação do resultado fiscal com a meta fixada em lei.</li>
+        <li>Contas de estados e municípios em separado.</li>
+        <li>A faixa de tolerância da meta de inflação.</li>
+        <li>Taxa de poupança e custo médio da dívida.</li>
+        <li>Dados anteriores a julho de 1994, início do Plano Real. Várias séries começam depois, na data em que a fonte passou a publicá-las na metodologia atual.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Séries usadas</h2>
+      <p class="subtitle" id="series-summary">Todas as séries coletadas, com a fonte, a unidade e a data da última coleta bem-sucedida.</p>
+      <div class="table-view"><div class="table-scroll tall"><table id="series"></table></div></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Projeto independente. Não é publicação oficial do governo. <a href="metodologia.html">Metodologia e fontes</a></p>
+      <p>Fontes: IBGE, Banco Central do Brasil e Tesouro Nacional. <span id="collected"></span></p>
+    </div>
+  </footer>
+  <script type="module" src="js/pages/metodologia.js"></script>
+</body>
+</html>

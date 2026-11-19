@@ -5,9 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Preços e juros · Painel Macro Brasil</title>
   <meta name="description" content="Inflação, meta de inflação, taxa Selic e juro real no Brasil, com expectativas de mercado do Boletim Focus.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%232a78d6'/%3E%3Cpath d='M3 12V8h2v4zm4 0V4h2v8zm4 0V6h2v6z' fill='%23fff'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <a class="skip" href="#conteudo">Pular para o conteúdo</a>
   <header class="site-header">
     <div class="wrap">
       <a class="site-name" href="index.html">Painel Macro Brasil</a>
@@ -23,7 +25,7 @@
     </div>
   </header>
 
-  <main class="wrap">
+  <main class="wrap" id="conteudo">
     <h1>Preços e juros</h1>
     <p class="lead">A inflação corrói o valor do dinheiro; os juros são a ferramenta do Banco Central para contê-la. A diferença entre os dois, o juro real, é o que pesa sobre quem toma emprestado, inclusive o governo.</p>
 
@@ -45,7 +47,7 @@
 
     <section class="card">
       <h2>Taxa Selic</h2>
-      <p class="subtitle">Meta da taxa básica de juros definida pelo Copom, em % ao ano. A meta existe desde março de 1999. As linhas verticais marcam mudanças de regime: câmbio flutuante (1999), Lei de Responsabilidade Fiscal (2000), teto de gastos (2016) e arcabouço fiscal (2023).</p>
+      <p class="subtitle">Meta da taxa básica de juros definida pelo Comitê de Política Monetária (Copom) do Banco Central, em % ao ano. A meta existe desde março de 1999. As linhas verticais marcam mudanças de regime: câmbio flutuante (1999), Lei de Responsabilidade Fiscal (2000), teto de gastos (2016) e arcabouço fiscal (2023).</p>
       <div class="chart" id="chart-selic"></div>
       <p class="source" id="source-selic"></p>
     </section>
@@ -68,7 +70,7 @@
 
   <footer class="site-footer">
     <div class="wrap">
-      <p>Projeto independente. Não é publicação oficial do governo.</p>
+      <p>Projeto independente. Não é publicação oficial do governo. <a href="metodologia.html">Metodologia e fontes</a></p>
       <p>Fontes: IBGE (IPCA) e Banco Central do Brasil (SGS e Boletim Focus). <span id="collected"></span></p>
     </div>
   </footer>
