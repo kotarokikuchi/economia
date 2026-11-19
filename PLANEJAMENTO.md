@@ -361,7 +361,7 @@ Custos conhecidos de fazer em casa:
 | 3 | Bloco fiscal e dívida (dados do Tesouro são os mais trabalhosos). **Concluída em 2026-11-18**: páginas Fiscal (5 gráficos e 2 identidades) e Dívida (3 gráficos); leitor próprio da planilha do Tesouro; catálogo com 85 séries. Ficaram de fora a comparação com a meta fiscal e o custo médio da dívida | 2 a 3 dias |
 | 4 | Visão geral, externo e preços. **Concluída em 2026-11-18**: páginas Externo (5 gráficos) e Preços e juros (3 gráficos); Visão geral com 8 números e a tabela de expectativas do Focus; catálogo com 98 séries | 1 dia |
 | 5 | Simulador de dinâmica da dívida. **Concluída em 2026-11-18**: na página Dívida, com três controles (juro real, crescimento, primário), trajetória de 10 anos, primário que estabiliza a dívida e comparação com a expectativa do Focus | meio dia |
-| 6 | Página de metodologia, revisão de textos e leitura em celular | 1 dia |
+| 6 | Página de metodologia, revisão de textos e leitura em celular. **Concluída em 2026-11-18**: página Metodologia e fontes, com a tabela das 98 séries gerada a partir da coleta; link "pular para o conteúdo", ícone do site e texto de fonte com contraste maior; as 8 páginas verificadas em 390 px e 1100 px | 1 dia |
 | 7 | Dockerfile, `docker compose`, agendamento da coleta e HTTPS no servidor | 1 dia |
 
 As etapas 0 a 6 acontecem todas na máquina local. A etapa 7 só começa quando houver servidor.
