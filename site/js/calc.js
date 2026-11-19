@@ -94,6 +94,22 @@ export function combine(seriesList, fn) {
     .map(([date, value]) => [date, fn(value, ...maps.map((m) => m.get(date)))]);
 }
 
+/** Série diária -> mensal, com o último valor de cada mês na data do dia 1º. */
+export function monthEnd(daily) {
+  const byMonth = new Map();
+  for (const [date, value] of daily) if (value != null) byMonth.set(`${date.slice(0, 7)}-01`, value);
+  return [...byMonth];
+}
+
+/** Repete o valor anual (datas aaaa-01-01) em cada uma das datas dadas; anos sem valor ficam de fora. */
+export function spreadYearly(yearly, dates) {
+  const byYear = new Map(yearly.map(([date, value]) => [date.slice(0, 4), value]));
+  return dates.filter((date) => byYear.get(date.slice(0, 4)) != null).map((date) => [date, byYear.get(date.slice(0, 4))]);
+}
+
+/** Juro real (%) a partir do juro nominal e da inflação, ambos em % ao ano. */
+export const realRate = (nominal, inflation) => ((1 + nominal / 100) / (1 + inflation / 100) - 1) * 100;
+
 /** Alinha várias séries em uma tabela: datas ordenadas e uma coluna de valores por série. */
 export function align(seriesData) {
   const dates = [...new Set(seriesData.flatMap((d) => d.map(([date]) => date)))].sort();

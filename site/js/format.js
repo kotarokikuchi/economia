@@ -23,9 +23,10 @@ export function fmtTick(value, step) {
 
 const MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 
-/** '2026-04-01' -> '2º tri 2026' (Q), 'abr/2026' (M) ou '01/04/2026' (D). */
+/** '2026-04-01' -> '2º tri 2026' (Q), 'abr/2026' (M), '2026' (A) ou '01/04/2026' (D). */
 export function fmtPeriod(iso, freq) {
   const [year, month, day] = iso.slice(0, 10).split('-');
+  if (freq === 'A') return year;
   if (freq === 'Q') return `${Math.ceil(Number(month) / 3)}º tri ${year}`;
   if (freq === 'M') return `${MONTHS[Number(month) - 1]}/${year}`;
   return `${day}/${month}/${year}`;

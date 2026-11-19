@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
 import {
-  align, combine, compound, cutoff, nearestIndex, niceTicks, pctChange, rolling12, rollingSum, scaleLinear, stack, yearTicks,
+  align, combine, compound, cutoff, monthEnd, nearestIndex, niceTicks, pctChange, realRate, rolling12, rollingSum,
+  scaleLinear, spreadYearly, stack, yearTicks,
 } from '../site/js/calc.js';
 import { fmtNumber, fmtPeriod, fmtTick } from '../site/js/format.js';
 
@@ -86,6 +87,25 @@ test('combine opera data a data e descarta datas incompletas', () => {
   assert.deepEqual(combine([m1, base], (a, b) => a / b), [['2026-09-01', 2]]);
 });
 
+test('monthEnd fica com o último valor de cada mês', () => {
+  assert.deepEqual(
+    monthEnd([['2026-10-30', 13.75], ['2026-10-31', null], ['2026-11-02', 13.75], ['2026-11-18', 13.5]]),
+    [['2026-10-01', 13.75], ['2026-11-01', 13.5]],
+  );
+});
+
+test('spreadYearly repete o valor do ano em cada data', () => {
+  assert.deepEqual(
+    spreadYearly([['2025-01-01', 3], ['2026-01-01', 3.5]], ['2024-12-01', '2025-06-01', '2026-02-01']),
+    [['2025-06-01', 3], ['2026-02-01', 3.5]],
+  );
+});
+
+test('realRate desconta a inflação pela fórmula de Fisher', () => {
+  assert.ok(Math.abs(realRate(13.75, 5) - 8.3333) < 1e-3);
+  assert.equal(realRate(5, 5), 0);
+});
+
 test('align une datas e preenche lacunas com nulo', () => {
   assert.deepEqual(
     align([[['2026-01-01', 1], ['2026-04-01', 2]], [['2026-04-01', 9], ['2025-10-01', 8]]]),
@@ -98,6 +118,7 @@ test('formatação brasileira de números e períodos', () => {
   assert.equal(fmtNumber(null), '–');
   assert.equal(fmtPeriod('2026-04-01', 'Q'), '2º tri 2026');
   assert.equal(fmtPeriod('2026-09-01', 'M'), 'set/2026');
+  assert.equal(fmtPeriod('2026-01-01', 'A'), '2026');
   assert.equal(fmtPeriod('2026-11-18', 'D'), '18/11/2026');
   assert.equal(fmtPeriod('2026-11-18T20:15:14-03:00', 'D'), '18/11/2026');
   assert.equal(fmtTick(7.5, 2.5), '7,5');
