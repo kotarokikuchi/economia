@@ -106,7 +106,7 @@ Indicadores derivados:
 - **Dívida**: Dívida Bruta do Governo Geral (DBGG) e Dívida Líquida do Setor Público (DLSP), em R$ e em % do PIB.
 - **Dívida Pública Federal (DPF)**: estoque, composição por indexador (Selic, prefixado, IPCA, câmbio), prazo médio e custo médio.
 - **Composição da despesa**: previdência (RGPS), pessoal, demais obrigatórias, discricionárias, investimento.
-- **Regra fiscal**: meta de resultado primário e limite de despesa do arcabouço fiscal (LC 200/2023), realizado contra meta.
+- **Regra fiscal**: meta de resultado primário e limite de despesa do arcabouço fiscal (LC 200/2023), realizado contra meta. Ainda não implementado: as metas não vêm de nenhuma API e precisam ser lançadas à mão, com fonte conferida.
 
 Dois conceitos que precisam aparecer rotulados, porque dão números diferentes:
 
@@ -208,7 +208,23 @@ SGS, por bloco:
 
 Conferido na coleta real da etapa 1: M1, PMPP e depósitos à vista têm o primeiro dado em jan/2002; M2 e M3, em ago/2001. M1 a M4 estão em R$ mil (M1 de R$ 0,65 trilhão e M4 de R$ 16,05 trilhões em set/2026). A identidade do PIB fecha sem resíduo em valores correntes quando se inclui a variação de estoques.
 
-Nas NFSP, sinal positivo é déficit. "Governo Federal e Banco Central" inclui o INSS e corresponde ao Governo Central.
+Séries acrescentadas na etapa 3, todas conferidas no catálogo do Banco Central salvo indicação:
+
+| Bloco | Código | Série | Início |
+|---|---|---|---|
+| Fiscal | 5750 | Juros nominais, Governo Federal e Banco Central, % do PIB em 12 meses | dez/1991 |
+| Fiscal | 7869 | Resultado primário, Governo Federal sem INSS, % do PIB em 12 meses | dez/1999 |
+| Fiscal | 7870 | Resultado primário, INSS, % do PIB em 12 meses | dez/1998 |
+| Fiscal | 5785 | Resultado primário, Banco Central, % do PIB em 12 meses | dez/1999 |
+| Dívida | 4177, 4178, 4173 | Dívida mobiliária, participação por indexador (Selic, prefixado, câmbio), posição em carteira | jan/2000 |
+| Dívida | 12001 | Idem, IPCA **(confirmar o nome)**: fora do catálogo, mas soma 100% com os demais indexadores | jan/2000 |
+| Dívida | 10618 | Prazo médio dos títulos do Tesouro Nacional, em meses | set/2000 |
+
+Conferências com dados de set/2026: Tesouro (−2,11) + INSS (2,49) + Banco Central (0,01) = primário do Governo Central (0,39% do PIB, déficit); primário (0,39) + juros (8,26) = nominal (8,66), a menos de arredondamento.
+
+Planilha do Tesouro (Resultado do Tesouro Nacional, aba 1.1, R$ milhões, mensal): receita total, transferências por repartição, receita líquida, despesa total, benefícios previdenciários, pessoal, outras obrigatórias, despesas sujeitas à programação financeira e resultado primário acima da linha. As linhas são localizadas pelo começo do rótulo (por exemplo, "4.1 Benefícios Previdenciários"); se o Tesouro renomear uma rubrica, a série falha com erro explícito em vez de trazer dado errado. Conferido em jul/2026: receita líquida − despesa = primário, e as 4 rubricas de despesa somam a despesa total, sem resíduo. Em 12 meses, o primário do Tesouro (−72,7 bilhões) e o do Banco Central (−72,4 bilhões) diferem em R$ 0,25 bilhão.
+
+Nas NFSP, sinal positivo é déficit. O site inverte o sinal, para déficit aparecer como número negativo. "Governo Federal e Banco Central" inclui o INSS e corresponde ao Governo Central.
 
 Códigos com dados conferidos, mas sem nome no catálogo **(confirmar o nome no site do SGS)**: 433 (IPCA mensal), 13522 (IPCA 12 meses), 4380 (PIB mensal em valores correntes), 3546 (reservas internacionais, mensal). Os valores recentes são coerentes com o esperado.
 
@@ -241,7 +257,7 @@ Início de cada série, verificado na etapa 0 salvo indicação:
 | Resultado primário e nominal do Governo Central (Banco Central) | 1991 | cobre o período inteiro |
 | Transações correntes e balança comercial | 1995 | |
 | PIB trimestral | 1996 | 1994 e 1995 só em séries anuais |
-| Resultado do Tesouro Nacional (planilha) | 1997 **(confirmar)** | planilha baixada, data inicial não conferida |
+| Resultado do Tesouro Nacional (planilha) | jan/1997 | conferido na coleta; a planilha sai com cerca de 2 meses de atraso em relação ao Banco Central |
 | Meta Selic | mar/1999 | antes disso, usar a Selic efetiva mensal (desde 1986) |
 | Expectativas Focus | 1999 | indicadores fiscais podem começar depois **(confirmar)** |
 | M1 a M4 e PMPP na metodologia atual | 2001 | séries antigas existem desde 1994, nomes a confirmar |
@@ -323,7 +339,7 @@ Custos conhecidos de fazer em casa:
 | 1 | Coletor + catálogo + SQLite + exportação JSON para os blocos 3.1 e 3.2. **Concluída em 2026-11-18**: 56 séries, cerca de 27 mil observações, coleta completa em 1 minuto | 1 dia |
 | 1b | Módulo de gráficos em SVG e esqueleto do site (navegação, layout, celular). **Concluída em 2026-11-18**: gráficos de linha e de barras empilhadas, seletor de período, dica por mouse, toque e teclado, tabela de dados, temas claro e escuro; páginas Visão geral e Atividade | 3 dias |
 | 2 | Páginas de Atividade e Moeda. **Concluída em 2026-11-18**: 7 gráficos em Atividade e 4 em Moeda, com as identidades do PIB, da base monetária e do M1; catálogo com 60 séries. Ficou de fora a taxa de poupança (tabela 2072 do IBGE, ainda não coletada) | 1 dia |
-| 3 | Bloco fiscal e dívida (dados do Tesouro são os mais trabalhosos) | 2 a 3 dias |
+| 3 | Bloco fiscal e dívida (dados do Tesouro são os mais trabalhosos). **Concluída em 2026-11-18**: páginas Fiscal (5 gráficos e 2 identidades) e Dívida (3 gráficos); leitor próprio da planilha do Tesouro; catálogo com 85 séries. Ficaram de fora a comparação com a meta fiscal e o custo médio da dívida | 2 a 3 dias |
 | 4 | Visão geral, externo e preços | 1 dia |
 | 5 | Simulador de dinâmica da dívida | meio dia |
 | 6 | Página de metodologia, revisão de textos e leitura em celular | 1 dia |
