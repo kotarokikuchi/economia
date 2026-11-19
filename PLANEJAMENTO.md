@@ -53,6 +53,8 @@ Visualizações:
 - PIB pela ótica da oferta (agropecuária, indústria, serviços) como visão secundária.
 - Proxy mensal: IBC-Br (Banco Central), para não esperar o dado trimestral.
 
+Como a contribuição ao crescimento é calculada no site (o IBGE não a publica nessa tabela): peso do componente no PIB nominal do mesmo trimestre do ano anterior, multiplicado pelo crescimento real do componente contra esse trimestre. A diferença para o crescimento oficial do PIB aparece como "Estoques e resíduo" e costuma ser grande, porque a variação de estoques das contas trimestrais absorve também a discrepância estatística. É uma aproximação, e o site diz isso.
+
 ### 3.2 Moeda e liquidez (Banco Central)
 
 Base monetária (correção da fórmula anotada inicialmente: é uma igualdade, não uma soma de três termos):
@@ -320,7 +322,7 @@ Custos conhecidos de fazer em casa:
 | 0 | Validar códigos das séries, a data de início de cada uma e baixar uma amostra de cada fonte. **Concluída em 2026-11-18**, com 5 itens "(confirmar)" restantes, nenhum bloqueante | meio dia |
 | 1 | Coletor + catálogo + SQLite + exportação JSON para os blocos 3.1 e 3.2. **Concluída em 2026-11-18**: 56 séries, cerca de 27 mil observações, coleta completa em 1 minuto | 1 dia |
 | 1b | Módulo de gráficos em SVG e esqueleto do site (navegação, layout, celular). **Concluída em 2026-11-18**: gráficos de linha e de barras empilhadas, seletor de período, dica por mouse, toque e teclado, tabela de dados, temas claro e escuro; páginas Visão geral e Atividade | 3 dias |
-| 2 | Páginas de Atividade e Moeda | 1 dia |
+| 2 | Páginas de Atividade e Moeda. **Concluída em 2026-11-18**: 7 gráficos em Atividade e 4 em Moeda, com as identidades do PIB, da base monetária e do M1; catálogo com 60 séries. Ficou de fora a taxa de poupança (tabela 2072 do IBGE, ainda não coletada) | 1 dia |
 | 3 | Bloco fiscal e dívida (dados do Tesouro são os mais trabalhosos) | 2 a 3 dias |
 | 4 | Visão geral, externo e preços | 1 dia |
 | 5 | Simulador de dinâmica da dívida | meio dia |
