@@ -6,7 +6,8 @@
 //   title: texto para leitores de tela,
 //   freq: 'D' | 'M' | 'Q',
 //   unit: '%', decimals: 1,
-//   series: [{ name, color: 'var(--series-1)', data: [[iso, valor]], dashed }],
+//   series: [{ name, color: 'var(--series-1)', data: [[iso, valor]], dashed, sparse }],
+//     dashed: linha tracejada (projeção); sparse: poucos pontos, ligados entre si mesmo sem dado nas datas intermediárias
 //   events: [{ date, label }]        // só em 'line': linhas verticais de mudança de regime
 //   zero: false                      // só em 'line': não forçar o zero no eixo
 //   totalLabel: 'PIB'                // só em 'bars': mostra a soma da coluna na dica e na tabela
@@ -32,6 +33,13 @@ function html(tag, className, text, parent) {
   if (text != null) node.textContent = text;
   parent?.append(node);
   return node;
+}
+
+/** Troca os dados de um gráfico já montado (usado pelo simulador). */
+export function update(el, spec) {
+  const chart = charts.find((c) => c.el === el);
+  chart.spec = spec;
+  render(chart);
 }
 
 export function mount(el, spec) {
@@ -175,7 +183,7 @@ function render(chart) {
       let d = '';
       let pen = 'M';
       cols[k].forEach((value, i) => {
-        if (value == null) { pen = 'M'; return; }
+        if (value == null) { if (!s.sparse) pen = 'M'; return; }
         d += `${pen}${xs[i].toFixed(1)},${y(value).toFixed(1)}`;
         pen = 'L';
       });

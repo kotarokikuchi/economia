@@ -128,3 +128,14 @@ h1 { font-size: 26px; line-height: 1.25; margin: 0 0 4px; }
 .card h2 + .glossary { margin-top: 8px; }
 .table-view tbody th:first-child { white-space: normal; }
 .tile .value { white-space: nowrap; }
+
+/* ----- simulador ----- */
+.sim-controls { display: grid; grid-template-columns: minmax(0, 16rem) minmax(0, 1fr); gap: 8px 16px; align-items: center; margin-bottom: 12px; }
+.sim-controls label { font-size: 14px; color: var(--text-2); }
+.sim-controls output { display: block; color: var(--text-1); font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.sim-controls input { width: 100%; accent-color: var(--series-1); }
+.sim-result { margin: 12px 0; max-width: 68ch; }
+button { font: inherit; font-size: 14px; padding: 4px 12px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--text-1); cursor: pointer; }
+button:hover { border-color: var(--muted); }
+button:focus-visible { outline: 2px solid var(--series-1); outline-offset: 2px; }
+@media (max-width: 480px) { .sim-controls { grid-template-columns: 1fr; gap: 2px; } .sim-controls input { margin-bottom: 10px; } }

@@ -110,6 +110,19 @@ export function spreadYearly(yearly, dates) {
 /** Juro real (%) a partir do juro nominal e da inflação, ambos em % ao ano. */
 export const realRate = (nominal, inflation) => ((1 + nominal / 100) / (1 + inflation / 100) - 1) * 100;
 
+/**
+ * Trajetória anual da dívida/PIB (%): d(t+1) = d(t) x (1 + r) / (1 + g) - p.
+ * r = juro real, g = crescimento real do PIB, p = resultado primário (superávit positivo), todos em %.
+ */
+export function simulateDebt(debt, rate, growth, primary, years) {
+  const path = [debt];
+  for (let t = 0; t < years; t++) path.push((path[t] * (1 + rate / 100)) / (1 + growth / 100) - primary);
+  return path;
+}
+
+/** Resultado primário (% do PIB) que mantém a dívida/PIB constante. */
+export const stabilizingPrimary = (debt, rate, growth) => (debt * (rate - growth)) / (100 + growth);
+
 /** Alinha várias séries em uma tabela: datas ordenadas e uma coluna de valores por série. */
 export function align(seriesData) {
   const dates = [...new Set(seriesData.flatMap((d) => d.map(([date]) => date)))].sort();

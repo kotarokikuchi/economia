@@ -4,7 +4,7 @@ import { test } from 'node:test';
 
 import {
   align, combine, compound, cutoff, monthEnd, nearestIndex, niceTicks, pctChange, realRate, rolling12, rollingSum,
-  scaleLinear, spreadYearly, stack, yearTicks,
+  scaleLinear, simulateDebt, spreadYearly, stabilizingPrimary, stack, yearTicks,
 } from '../site/js/calc.js';
 import { fmtNumber, fmtPeriod, fmtTick } from '../site/js/format.js';
 
@@ -104,6 +104,23 @@ test('spreadYearly repete o valor do ano em cada data', () => {
 test('realRate desconta a inflação pela fórmula de Fisher', () => {
   assert.ok(Math.abs(realRate(13.75, 5) - 8.3333) < 1e-3);
   assert.equal(realRate(5, 5), 0);
+});
+
+test('simulateDebt aplica a dinâmica da dívida ano a ano', () => {
+  // juro real igual ao crescimento e primário zero: a dívida/PIB não se move
+  assert.deepEqual(simulateDebt(80, 3, 3, 0, 3), [80, 80, 80, 80]);
+  // 80 x 1,06 / 1,02 - 1 = 82,137...
+  const path = simulateDebt(80, 6, 2, 1, 2);
+  assert.ok(Math.abs(path[1] - 82.13725) < 1e-4);
+  assert.ok(Math.abs(path[2] - (path[1] * 1.06 / 1.02 - 1)) < 1e-9);
+});
+
+test('stabilizingPrimary mantém a dívida parada quando aplicado', () => {
+  const primary = stabilizingPrimary(83, 6.5, 1.7);
+  assert.ok(Math.abs(primary - 83 * 0.048 / 1.017) < 1e-9);
+  const path = simulateDebt(83, 6.5, 1.7, primary, 5);
+  assert.ok(path.every((d) => Math.abs(d - 83) < 1e-9));
+  assert.ok(stabilizingPrimary(83, 1, 3) < 0); // crescimento acima do juro permite déficit
 });
 
 test('align une datas e preenche lacunas com nulo', () => {
