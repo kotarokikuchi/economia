@@ -4,6 +4,10 @@ services:
       context: .
       target: web
     restart: unless-stopped
+    # O Caddy só precisa abrir as portas 80 e 443; as demais capacidades de root são retiradas.
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE]
+    security_opt: ["no-new-privileges:true"]
     environment:
       SITE_ADDRESS: ${SITE_ADDRESS:-:80}
     ports:
@@ -21,6 +25,9 @@ services:
       context: .
       target: collector
     profiles: ["collect"]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    read_only: true         # a coleta só grava nos dois volumes abaixo
     volumes:
       - db:/data              # banco SQLite; nunca é servido ao público
       - export:/export

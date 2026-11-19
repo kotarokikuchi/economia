@@ -8,6 +8,10 @@
 	header {
 		X-Content-Type-Options nosniff
 		Referrer-Policy strict-origin-when-cross-origin
+		# Depois da primeira visita por HTTPS, o navegador não volta a tentar HTTP (ignorado em HTTP puro).
+		Strict-Transport-Security "max-age=31536000"
+		# O site não usa câmera, microfone, localização nem pagamentos.
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
 		# O site só carrega arquivos próprios; o ícone é embutido como data:.
 		Content-Security-Policy "default-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
 		-Server
