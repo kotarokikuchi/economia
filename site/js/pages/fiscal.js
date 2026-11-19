@@ -1,0 +1,65 @@
+import { rollingSum } from '../calc.js';
+import { bindPeriod, mount } from '../chart.js';
+import { loadIndex, loadSeries, REGIMES } from '../data.js';
+import { fmtNumber, fmtPeriod } from '../format.js';
+import { renderIdentity, run, showCollected, sourceText } from './common.js';
+
+const BCB = 'Banco Central do Brasil, SGS';
+// O Banco Central publica necessidade de financiamento (déficit positivo); aqui déficit é negativo.
+const flip = (series) => series.map(([date, value]) => [date, value == null ? null : -value]);
+
+run(async () => {
+  const [index, data] = await Promise.all([loadIndex(), loadSeries([
+    'primario_gc_pib', 'nominal_gc_pib', 'juros_gc_pib', 'primario_tesouro_pib', 'primario_inss_pib', 'primario_bc_pib',
+    'primario_gc', 'nominal_gc', 'juros_gc',
+  ])]);
+  showCollected(index);
+  bindPeriod(document.getElementById('period'));
+  const source = (id, codes, seriesId) => {
+    document.getElementById(`source-${id}`).textContent =
+      sourceText(`${BCB} ${codes}`, data[seriesId].at(-1)[0], 'M', index[seriesId]);
+  };
+
+  // ----- identidade com os valores acumulados em 12 meses -----
+  const last = (series) => series.at(-1)[1];
+  const sum12 = (id) => last(rollingSum(data[id], 12)) / 1000; // R$ milhões -> R$ bilhões
+  const signed = (value, decimals) => fmtNumber(value, decimals).replace('-', '−');
+  document.getElementById('identity-subtitle').textContent =
+    `Acumulado em 12 meses até ${fmtPeriod(data.primario_gc_pib.at(-1)[0], 'M')}. Valor negativo é déficit.`;
+  renderIdentity(document.getElementById('identity-pib'), [
+    [`${signed(-last(data.nominal_gc_pib), 2)}%`, 'resultado nominal'], '=',
+    [`${signed(-last(data.primario_gc_pib), 2)}%`, 'resultado primário'], '−',
+    [`${signed(last(data.juros_gc_pib), 2)}%`, 'juros'],
+  ]);
+  renderIdentity(document.getElementById('identity-brl'), [
+    [signed(-sum12('nominal_gc'), 1), 'resultado nominal'], '=',
+    [signed(-sum12('primario_gc'), 1), 'resultado primário'], '−',
+    [signed(sum12('juros_gc'), 1), 'juros'],
+  ]);
+
+  mount(document.getElementById('chart-result'), {
+    type: 'line', title: 'Resultado primário e nominal do Governo Central em % do PIB', freq: 'M', unit: '%', decimals: 2,
+    series: [
+      { name: 'Resultado primário', color: 'var(--series-1)', data: flip(data.primario_gc_pib) },
+      { name: 'Resultado nominal', color: 'var(--series-2)', data: flip(data.nominal_gc_pib) },
+    ],
+    events: REGIMES,
+  });
+  source('result', '5783 e 5717', 'primario_gc_pib');
+
+  mount(document.getElementById('chart-interest'), {
+    type: 'line', title: 'Juros nominais do Governo Central em % do PIB', freq: 'M', unit: '%', decimals: 2,
+    series: [{ name: 'Juros', color: 'var(--series-2)', data: data.juros_gc_pib }],
+  });
+  source('interest', '5750', 'juros_gc_pib');
+
+  mount(document.getElementById('chart-parts'), {
+    type: 'line', title: 'Resultado primário do Tesouro, da Previdência e do Banco Central em % do PIB', freq: 'M', unit: '%', decimals: 2,
+    series: [
+      { name: 'Tesouro Nacional', color: 'var(--series-1)', data: flip(data.primario_tesouro_pib) },
+      { name: 'Previdência (INSS)', color: 'var(--series-2)', data: flip(data.primario_inss_pib) },
+      { name: 'Banco Central', color: 'var(--series-3)', data: flip(data.primario_bc_pib) },
+    ],
+  });
+  source('parts', '7869, 7870 e 5785', 'primario_inss_pib');
+});

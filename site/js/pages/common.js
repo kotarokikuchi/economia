@@ -33,6 +33,21 @@ export function renderIdentity(el, terms) {
   }
 }
 
+/** Números de destaque. tiles: [rótulo, valor formatado, período]. */
+export function renderTiles(container, tiles) {
+  for (const texts of tiles) {
+    const tile = document.createElement('figure');
+    tile.className = 'card tile';
+    ['label', 'value', 'period'].forEach((className, k) => {
+      const node = document.createElement('div');
+      node.className = className;
+      node.textContent = texts[k];
+      tile.append(node);
+    });
+    container.append(tile);
+  }
+}
+
 export function run(load) {
   load().catch((error) => {
     console.error(error);

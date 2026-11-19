@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fiscal · Painel Macro Brasil</title>
+  <meta name="description" content="Resultado primário e nominal do Governo Central do Brasil, conta de juros e o peso da Previdência, em proporção do PIB.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="site-name" href="index.html">Painel Macro Brasil</a>
+      <nav aria-label="Seções">
+        <a href="index.html">Visão geral</a>
+        <a href="atividade.html">Atividade</a>
+        <a href="moeda.html">Moeda</a>
+        <a href="fiscal.html" aria-current="page">Fiscal</a>
+        <a href="divida.html">Dívida</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h1>Contas do Governo Central</h1>
+    <p class="lead">O governo gasta mais do que arrecada? Esta página responde para o Governo Central: Tesouro Nacional, Previdência Social (INSS) e Banco Central. Estados, municípios e estatais ficam de fora.</p>
+
+    <section class="card">
+      <h2>A conta do resultado: nominal = primário − juros</h2>
+      <p class="subtitle" id="identity-subtitle">Acumulado em 12 meses. Valor negativo é déficit.</p>
+      <h3>Em % do PIB</h3>
+      <div class="identity" id="identity-pib"></div>
+      <h3>Em R$ bilhões</h3>
+      <div class="identity" id="identity-brl"></div>
+      <p class="source">Resultado primário é a arrecadação menos as despesas, sem contar os juros da dívida. O resultado nominal inclui os juros e mostra quanto a dívida precisa crescer para fechar a conta.</p>
+    </section>
+
+    <fieldset class="filters" id="period">
+      <legend>Período</legend>
+      <label><input type="radio" name="period" value="5"><span>5 anos</span></label>
+      <label><input type="radio" name="period" value="10" checked><span>10 anos</span></label>
+      <label><input type="radio" name="period" value="0"><span>Desde 1994</span></label>
+    </fieldset>
+
+    <section class="card">
+      <h2>Resultado primário e nominal</h2>
+      <p class="subtitle">Acumulado em 12 meses, em % do PIB. Acima de zero é superávit; abaixo, déficit. A distância entre as duas linhas é a conta de juros. As linhas verticais marcam mudanças de regime: câmbio flutuante (1999), Lei de Responsabilidade Fiscal (2000), teto de gastos (2016) e arcabouço fiscal (2023).</p>
+      <div class="chart" id="chart-result"></div>
+      <p class="source" id="source-result"></p>
+    </section>
+
+    <section class="card">
+      <h2>Conta de juros</h2>
+      <p class="subtitle">Juros nominais pagos pelo Governo Central, acumulados em 12 meses, em % do PIB.</p>
+      <div class="chart" id="chart-interest"></div>
+      <p class="source" id="source-interest"></p>
+    </section>
+
+    <section class="card">
+      <h2>De onde vem o resultado primário</h2>
+      <p class="subtitle">Resultado primário de cada parte do Governo Central, acumulado em 12 meses, em % do PIB. O Tesouro costuma ter superávit e a Previdência, déficit; o resultado do Governo Central é a soma dos três.</p>
+      <div class="chart" id="chart-parts"></div>
+      <p class="source" id="source-parts"></p>
+    </section>
+
+    <section class="card">
+      <h2>Como ler estes números</h2>
+      <ul class="glossary">
+        <li><strong>Abaixo da linha</strong>: os dados desta página são do Banco Central, que mede o resultado pela variação da dívida. O Tesouro Nacional mede o mesmo resultado "acima da linha", somando receitas e despesas; os dois números ficam próximos, mas não são idênticos.</li>
+        <li><strong>Sinal</strong>: o Banco Central publica a necessidade de financiamento, em que déficit é positivo. Aqui o sinal foi invertido para que déficit apareça como número negativo.</li>
+        <li><strong>Ainda não incluído</strong>: detalhamento de receitas e despesas e comparação com a meta fiscal.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Projeto independente. Não é publicação oficial do governo.</p>
+      <p>Fontes: IBGE (Contas Nacionais Trimestrais) e Banco Central do Brasil (SGS). <span id="collected"></span></p>
+    </div>
+  </footer>
+  <script type="module" src="js/pages/fiscal.js"></script>
+</body>
+</html>

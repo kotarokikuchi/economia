@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dívida · Painel Macro Brasil</title>
+  <meta name="description" content="Dívida pública do Brasil em proporção do PIB: dívida bruta do governo geral, dívida líquida do setor público, composição e prazo dos títulos federais.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="site-name" href="index.html">Painel Macro Brasil</a>
+      <nav aria-label="Seções">
+        <a href="index.html">Visão geral</a>
+        <a href="atividade.html">Atividade</a>
+        <a href="moeda.html">Moeda</a>
+        <a href="fiscal.html">Fiscal</a>
+        <a href="divida.html" aria-current="page">Dívida</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h1>Dívida pública</h1>
+    <p class="lead">Quando o governo gasta mais do que arrecada, a diferença vira dívida. O que importa não é o valor em reais, mas o tamanho da dívida em relação à economia, medido em % do PIB.</p>
+
+    <div class="tiles" id="tiles"></div>
+
+    <section class="card">
+      <h2>Duas medidas, dois recortes</h2>
+      <ul class="glossary">
+        <li><strong>Dívida Bruta do Governo Geral (DBGG)</strong>: tudo o que União, estados e municípios devem. É a medida mais usada em comparações internacionais.</li>
+        <li><strong>Dívida Líquida do Setor Público (DLSP)</strong>: desconta o que o governo tem a receber, como as reservas internacionais, e inclui Banco Central e estatais.</li>
+      </ul>
+    </section>
+
+    <fieldset class="filters" id="period">
+      <legend>Período</legend>
+      <label><input type="radio" name="period" value="5"><span>5 anos</span></label>
+      <label><input type="radio" name="period" value="10" checked><span>10 anos</span></label>
+      <label><input type="radio" name="period" value="0"><span>Desde 2000</span></label>
+    </fieldset>
+
+    <section class="card">
+      <h2>Dívida em proporção do PIB</h2>
+      <p class="subtitle">Saldo em % do PIB. A dívida bruta na metodologia atual começa em dezembro de 2006; a líquida, em dezembro de 2001.</p>
+      <div class="chart" id="chart-debt"></div>
+      <p class="source" id="source-debt"></p>
+    </section>
+
+    <section class="card">
+      <h2>A que a dívida está atrelada</h2>
+      <p class="subtitle">Composição dos títulos públicos federais por indexador, em % do total, ao fim de cada trimestre. Quanto maior a parcela atrelada à Selic, mais rápido uma alta de juros encarece a dívida.</p>
+      <div class="chart" id="chart-index"></div>
+      <p class="source" id="source-index"></p>
+    </section>
+
+    <section class="card">
+      <h2>Prazo médio</h2>
+      <p class="subtitle">Prazo médio dos títulos do Tesouro Nacional, em anos. Prazo mais longo significa menos dívida vencendo a cada ano. O eixo não começa em zero.</p>
+      <div class="chart" id="chart-maturity"></div>
+      <p class="source" id="source-maturity"></p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Projeto independente. Não é publicação oficial do governo.</p>
+      <p>Fontes: IBGE (Contas Nacionais Trimestrais) e Banco Central do Brasil (SGS). <span id="collected"></span></p>
+    </div>
+  </footer>
+  <script type="module" src="js/pages/divida.js"></script>
+</body>
+</html>
