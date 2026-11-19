@@ -128,7 +128,7 @@ h1 { font-size: 26px; line-height: 1.25; margin: 0 0 4px; }
 .table-view th:first-child { text-align: left; font-weight: 400; color: var(--text-2); }
 .table-view thead th { position: sticky; top: 0; background: var(--surface); color: var(--text-2); font-weight: 600; white-space: normal; }
 .card h2 + .glossary { margin-top: 8px; }
-.table-view tbody th:first-child { white-space: normal; }
+#focus tbody th, #series tbody th, #params tbody th { white-space: normal; } /* rótulos longos; os períodos das tabelas de dados não quebram */
 .tile .value { white-space: nowrap; }
 
 /* ----- simulador ----- */
