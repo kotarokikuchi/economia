@@ -313,12 +313,26 @@ def write_json(path, obj):
     os.replace(tmp, path)
 
 
-def export(conn, export_dir):
+def source_ref(entry):
+    """Onde achar a série na fonte, em texto para o leitor do site."""
+    if entry["source"] == "sgs":
+        return f"Banco Central, SGS {entry['code']}"
+    if entry["source"] == "sidra":
+        return f"IBGE, SIDRA, tabela {entry['table']}"
+    if entry["source"] == "rtn":
+        return f"Tesouro Nacional, RTN, tabela {entry['sheet']}"
+    return f"Banco Central, Boletim Focus, {entry['indicator']}"
+
+
+def export(conn, export_dir, catalog=()):
     """Um JSON por série com dados, mais index.json com os metadados e o estado de cada série."""
     export_dir.mkdir(parents=True, exist_ok=True)
+    refs = {entry["id"]: source_ref(entry) for entry in catalog}
     conn.row_factory = sqlite3.Row
     index = [dict(row) for row in conn.execute("SELECT * FROM series ORDER BY block, id")]
     conn.row_factory = None
+    for series in index:
+        series["ref"] = refs.get(series["id"])
     for series in index:
         data = conn.execute(
             "SELECT date, value FROM observations WHERE series_id = ? ORDER BY date",
@@ -403,7 +417,7 @@ def main(argv):
             store(conn, series_id, result, now.isoformat())
             dates = [d for d, _ in result]
             print(f"ok   {series_id}: {len(result)} pontos, {min(dates)} a {max(dates)}")
-    export(conn, EXPORT_DIR)
+    export(conn, EXPORT_DIR, catalog)
     conn.close()
     print(f"{len(entries) - failures} de {len(entries)} séries coletadas; banco em {DB_PATH}")
     return 1 if failures else 0

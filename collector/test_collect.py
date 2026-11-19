@@ -172,7 +172,7 @@ class DatabaseTest(unittest.TestCase):
     def test_export_writes_series_and_index(self):
         collect.store(self.conn, "m1", [("2026-02-01", 2.0), ("2026-01-01", 1.0)], "t1")
         with tempfile.TemporaryDirectory() as tmp:
-            collect.export(self.conn, Path(tmp))
+            collect.export(self.conn, Path(tmp), [M1])
             series = json.loads((Path(tmp) / "m1.json").read_text(encoding="utf-8"))
             index = json.loads((Path(tmp) / "index.json").read_text(encoding="utf-8"))
         self.assertEqual(
@@ -181,6 +181,7 @@ class DatabaseTest(unittest.TestCase):
         )
         self.assertEqual(index[0]["id"], "m1")
         self.assertEqual(index[0]["unit"], "R$ mil")
+        self.assertEqual(index[0]["ref"], "Banco Central, SGS 27791")
         self.assertIsNone(index[0]["error"])
 
 
