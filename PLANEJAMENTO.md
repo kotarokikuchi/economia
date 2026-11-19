@@ -128,6 +128,8 @@ O painel é de monitoramento. Projeções entram só por duas vias, sempre separ
 - **Boletim Focus**: mediana das expectativas de mercado para o ano corrente e os seguintes. A API oferece, entre outros: IPCA, PIB total e por componente (consumo das famílias, consumo do governo, FBCF, exportações, importações), Selic, câmbio, resultado primário, resultado nominal, DBGG, DLSP, balança comercial e conta corrente (verificado em 2026-11-18). São expectativas do mercado, não do governo nem do painel.
 - **Simulador de dinâmica da dívida**: o visitante escolhe juro real, crescimento do PIB e resultado primário, e vê a trajetória da dívida/PIB resultante pela fórmula da seção 4. Os valores iniciais vêm do Focus. É um exercício aritmético, não uma previsão, e a página diz isso.
 
+Limite conhecido do simulador (verificado em 2026-11-18): com os valores iniciais do Focus (juro real 6,6%, crescimento 1,7%, primário −0,2% do PIB), a conta leva a dívida bruta de 83,0% a 135,3% do PIB em 10 anos, enquanto o próprio Focus espera cerca de 102% em 2035. A diferença vem de aplicar a Selic real a toda a dívida, por 10 anos, e de ignorar os demais fatores que movem a DBGG. O site mostra as duas linhas e explica a diferença. Melhoria possível: usar a taxa implícita da dívida em vez da Selic.
+
 Fora: projeções do orçamento (PLOA, LDO) e modelos de previsão próprios.
 
 Situação em 2026-11-18: as expectativas do Focus aparecem em tabela na Visão geral e como linha tracejada no gráfico de inflação. Ainda não aparecem como continuação tracejada dos demais gráficos.
@@ -358,7 +360,7 @@ Custos conhecidos de fazer em casa:
 | 2 | Páginas de Atividade e Moeda. **Concluída em 2026-11-18**: 7 gráficos em Atividade e 4 em Moeda, com as identidades do PIB, da base monetária e do M1; catálogo com 60 séries. Ficou de fora a taxa de poupança (tabela 2072 do IBGE, ainda não coletada) | 1 dia |
 | 3 | Bloco fiscal e dívida (dados do Tesouro são os mais trabalhosos). **Concluída em 2026-11-18**: páginas Fiscal (5 gráficos e 2 identidades) e Dívida (3 gráficos); leitor próprio da planilha do Tesouro; catálogo com 85 séries. Ficaram de fora a comparação com a meta fiscal e o custo médio da dívida | 2 a 3 dias |
 | 4 | Visão geral, externo e preços. **Concluída em 2026-11-18**: páginas Externo (5 gráficos) e Preços e juros (3 gráficos); Visão geral com 8 números e a tabela de expectativas do Focus; catálogo com 98 séries | 1 dia |
-| 5 | Simulador de dinâmica da dívida | meio dia |
+| 5 | Simulador de dinâmica da dívida. **Concluída em 2026-11-18**: na página Dívida, com três controles (juro real, crescimento, primário), trajetória de 10 anos, primário que estabiliza a dívida e comparação com a expectativa do Focus | meio dia |
 | 6 | Página de metodologia, revisão de textos e leitura em celular | 1 dia |
 | 7 | Dockerfile, `docker compose`, agendamento da coleta e HTTPS no servidor | 1 dia |
 
