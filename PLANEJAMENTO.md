@@ -434,7 +434,7 @@ Em aberto:
 
 ## 12. Checagem de segurança antes de tornar o repositório público (2026-11-19)
 
-O repositório está privado. Esta seção registra o que foi verificado e o que falta para abri-lo.
+O repositório foi tornado público em 2026-11-19, depois desta checagem. Esta seção registra o que foi verificado e o que foi feito.
 
 Verificado, sem problemas:
 
@@ -461,7 +461,7 @@ Resolvido em 2026-11-19, bloqueava a abertura:
 Pendente, não bloqueia:
 
 - **Licença**: MIT, adotada em 2026-11-19 (arquivo `LICENSE`). Vale para o código; os dados continuam sendo das fontes.
-- **Depois de abrir**: ligar a varredura de segredos com bloqueio de push e a proteção da branch `main`, que o GitHub só oferece de graça em repositórios públicos.
+- **Proteções ligadas ao abrir** (2026-11-19): varredura de segredos com bloqueio de push, relato privado de vulnerabilidades e proteção da branch `main` contra force push e exclusão, valendo também para o dono. O push direto na `main` continua permitido, porque o fluxo do projeto é merge direto sem pull request.
 - **Imagens Docker** fixadas por versão (`python:3.14-slim`, `caddy:2-alpine`), não por resumo criptográfico. Aceitável; fixar por resumo dá mais garantia e exige atualização manual.
 - **O que não foi feito**: varredura com ferramenta especializada, teste de invasão e teste do HTTPS em servidor real.
 
