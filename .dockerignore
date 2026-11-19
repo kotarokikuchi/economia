@@ -1,0 +1,6 @@
+*
+!collector/collect.py
+!collector/catalog.json
+!site
+site/data
+!Caddyfile

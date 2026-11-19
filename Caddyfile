@@ -1,0 +1,21 @@
+# SITE_ADDRESS vazio: responde em HTTP na porta 80 (uso local ou atrás de outro proxy).
+# SITE_ADDRESS com um domínio (ex.: painel.exemplo.com.br): o Caddy obtém e renova o certificado HTTPS sozinho.
+{$SITE_ADDRESS::80} {
+	root * /srv
+	encode zstd gzip
+	file_server
+
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		# O site só carrega arquivos próprios; o ícone é embutido como data:.
+		Content-Security-Policy "default-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+		-Server
+	}
+
+	# Os dados mudam uma vez por dia; páginas, estilos e scripts mudam a cada publicação.
+	@data path /data/*
+	header @data Cache-Control "public, max-age=300"
+	@assets path /css/* /js/*
+	header @assets Cache-Control "public, max-age=3600"
+}
