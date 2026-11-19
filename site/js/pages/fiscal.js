@@ -1,4 +1,4 @@
-import { rollingSum } from '../calc.js';
+import { combine, rollingSum } from '../calc.js';
 import { bindPeriod, mount } from '../chart.js';
 import { loadIndex, loadSeries, REGIMES } from '../data.js';
 import { fmtNumber, fmtPeriod } from '../format.js';
@@ -11,7 +11,9 @@ const flip = (series) => series.map(([date, value]) => [date, value == null ? nu
 run(async () => {
   const [index, data] = await Promise.all([loadIndex(), loadSeries([
     'primario_gc_pib', 'nominal_gc_pib', 'juros_gc_pib', 'primario_tesouro_pib', 'primario_inss_pib', 'primario_bc_pib',
-    'primario_gc', 'nominal_gc', 'juros_gc',
+    'primario_gc', 'nominal_gc', 'juros_gc', 'pib_mensal',
+    'rtn_receita_liquida', 'rtn_despesa_total', 'rtn_primario',
+    'rtn_previdencia', 'rtn_pessoal', 'rtn_outras_obrigatorias', 'rtn_programacao',
   ])]);
   showCollected(index);
   bindPeriod(document.getElementById('period'));
@@ -62,4 +64,44 @@ run(async () => {
     ],
   });
   source('parts', '7869, 7870 e 5785', 'primario_inss_pib');
+
+  // ----- acima da linha: receitas e despesas do Tesouro Nacional (R$ milhões) -----
+  const RTN = 'Tesouro Nacional, Resultado do Tesouro Nacional, tabela 1.1';
+  const rtnSource = (id, extra = '') => {
+    document.getElementById(`source-${id}`).textContent =
+      `${sourceText(RTN, data.rtn_despesa_total.at(-1)[0], 'M', index.rtn_despesa_total)}${extra}`;
+  };
+  document.getElementById('identity-rtn-subtitle').textContent =
+    `Acumulado em 12 meses até ${fmtPeriod(data.rtn_primario.at(-1)[0], 'M')}, em R$ bilhões.`;
+  renderIdentity(document.getElementById('identity-rtn'), [
+    [signed(sum12('rtn_primario'), 1), 'resultado primário'], '=',
+    [signed(sum12('rtn_receita_liquida'), 1), 'receita líquida'], '−',
+    [signed(sum12('rtn_despesa_total'), 1), 'despesa total'],
+  ]);
+
+  const pib12 = rollingSum(data.pib_mensal, 12);
+  const pctOfGdp = (id) => combine([rollingSum(data[id], 12), pib12], (value, pib) => (value / pib) * 100);
+  mount(document.getElementById('chart-revenue'), {
+    type: 'line', title: 'Receita líquida e despesa primária do Governo Central em % do PIB', freq: 'M', unit: '%', decimals: 1, zero: false,
+    series: [
+      { name: 'Receita líquida', color: 'var(--series-1)', data: pctOfGdp('rtn_receita_liquida') },
+      { name: 'Despesa total', color: 'var(--series-2)', data: pctOfGdp('rtn_despesa_total') },
+    ],
+    events: REGIMES,
+  });
+  rtnSource('revenue', ' PIB: Banco Central, SGS 4380.');
+
+  // Composição ao fim de cada trimestre: barras mensais ficariam finas demais.
+  const quarterEnd = (series) => series.filter(([date]) => Number(date.slice(5, 7)) % 3 === 0);
+  mount(document.getElementById('chart-spending'), {
+    type: 'bars', title: 'Despesa primária do Governo Central por grupo em % do PIB', freq: 'M', unit: '%', decimals: 1,
+    totalLabel: 'Despesa total',
+    series: [
+      { name: 'Previdência', color: 'var(--series-1)', data: quarterEnd(pctOfGdp('rtn_previdencia')) },
+      { name: 'Pessoal', color: 'var(--series-2)', data: quarterEnd(pctOfGdp('rtn_pessoal')) },
+      { name: 'Outras obrigatórias', color: 'var(--series-3)', data: quarterEnd(pctOfGdp('rtn_outras_obrigatorias')) },
+      { name: 'Sujeitas à programação', color: 'var(--series-4)', data: quarterEnd(pctOfGdp('rtn_programacao')) },
+    ],
+  });
+  rtnSource('spending', ' PIB: Banco Central, SGS 4380.');
 });

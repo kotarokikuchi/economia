@@ -64,11 +64,33 @@
     </section>
 
     <section class="card">
+      <h2>A conta acima da linha: primário = receita líquida − despesa</h2>
+      <p class="subtitle" id="identity-rtn-subtitle">Acumulado em 12 meses, em R$ bilhões.</p>
+      <div class="identity" id="identity-rtn"></div>
+      <p class="source">Receita líquida é o que sobra para a União depois de repassar a estados e municípios a parte deles nos impostos. Os valores são do Tesouro Nacional e podem diferir um pouco dos do Banco Central no alto da página.</p>
+    </section>
+
+    <section class="card">
+      <h2>Receita e despesa</h2>
+      <p class="subtitle">Receita líquida e despesa primária total do Governo Central, acumuladas em 12 meses, em % do PIB. Quando a despesa fica acima da receita, há déficit primário. O eixo não começa em zero.</p>
+      <div class="chart" id="chart-revenue"></div>
+      <p class="source" id="source-revenue"></p>
+    </section>
+
+    <section class="card">
+      <h2>Para onde vai a despesa</h2>
+      <p class="subtitle">Despesa primária por grupo, acumulada em 12 meses, em % do PIB, ao fim de cada trimestre. "Sujeitas à programação" reúne as despesas discricionárias, como investimentos e custeio dos ministérios, e as obrigatórias com controle de fluxo.</p>
+      <div class="chart" id="chart-spending"></div>
+      <p class="source" id="source-spending"></p>
+    </section>
+
+    <section class="card">
       <h2>Como ler estes números</h2>
       <ul class="glossary">
-        <li><strong>Abaixo da linha</strong>: os dados desta página são do Banco Central, que mede o resultado pela variação da dívida. O Tesouro Nacional mede o mesmo resultado "acima da linha", somando receitas e despesas; os dois números ficam próximos, mas não são idênticos.</li>
+        <li><strong>Abaixo e acima da linha</strong>: os resultados primário, nominal e de juros são do Banco Central, que mede o resultado pela variação da dívida ("abaixo da linha"). Receitas e despesas são do Tesouro Nacional, que soma o que entra e o que sai ("acima da linha"). Os dois números do primário ficam próximos, mas não são idênticos.</li>
         <li><strong>Sinal</strong>: o Banco Central publica a necessidade de financiamento, em que déficit é positivo. Aqui o sinal foi invertido para que déficit apareça como número negativo.</li>
-        <li><strong>Ainda não incluído</strong>: detalhamento de receitas e despesas e comparação com a meta fiscal.</li>
+        <li><strong>Defasagem</strong>: a planilha do Tesouro costuma sair depois dos dados do Banco Central; por isso as duas partes da página podem terminar em meses diferentes.</li>
+        <li><strong>Ainda não incluído</strong>: comparação do resultado com a meta fiscal.</li>
       </ul>
     </section>
   </main>
@@ -76,7 +98,7 @@
   <footer class="site-footer">
     <div class="wrap">
       <p>Projeto independente. Não é publicação oficial do governo.</p>
-      <p>Fontes: IBGE (Contas Nacionais Trimestrais) e Banco Central do Brasil (SGS). <span id="collected"></span></p>
+      <p>Fontes: Banco Central do Brasil (SGS) e Tesouro Nacional (Resultado do Tesouro Nacional). <span id="collected"></span></p>
     </div>
   </footer>
   <script type="module" src="js/pages/fiscal.js"></script>
