@@ -74,5 +74,14 @@
   {"id": "divida_prefixado", "source": "sgs", "code": 4178, "name": "Dívida mobiliária federal prefixada", "unit": "% do total", "freq": "M", "block": "divida"},
   {"id": "divida_ipca", "source": "sgs", "code": 12001, "name": "Dívida mobiliária federal indexada ao IPCA", "unit": "% do total", "freq": "M", "block": "divida"},
   {"id": "divida_cambio", "source": "sgs", "code": 4173, "name": "Dívida mobiliária federal indexada ao câmbio", "unit": "% do total", "freq": "M", "block": "divida"},
-  {"id": "divida_prazo_medio", "source": "sgs", "code": 10618, "name": "Prazo médio da dívida mobiliária federal", "unit": "meses", "freq": "M", "block": "divida"}
+  {"id": "divida_prazo_medio", "source": "sgs", "code": 10618, "name": "Prazo médio da dívida mobiliária federal", "unit": "meses", "freq": "M", "block": "divida"},
+  {"id": "rtn_receita_total", "source": "rtn", "sheet": "1.1", "row": "1. RECEITA TOTAL", "name": "Receita total do Governo Central", "unit": "R$ milhões", "freq": "M", "block": "fiscal"},
+  {"id": "rtn_transferencias", "source": "rtn", "sheet": "1.1", "row": "2. TRANSF. POR REPARTIÇÃO DE RECEITA", "name": "Transferências a estados e municípios por repartição de receita", "unit": "R$ milhões", "freq": "M", "block": "fiscal"},
+  {"id": "rtn_receita_liquida", "source": "rtn", "sheet": "1.1", "row": "3. RECEITA LÍQUIDA", "name": "Receita líquida do Governo Central", "unit": "R$ milhões", "freq": "M", "block": "fiscal"},
+  {"id": "rtn_despesa_total", "source": "rtn", "sheet": "1.1", "row": "4. DESPESA TOTAL", "name": "Despesa primária total do Governo Central", "unit": "R$ milhões", "freq": "M", "block": "fiscal"},
+  {"id": "rtn_previdencia", "source": "rtn", "sheet": "1.1", "row": "4.1 Benefícios Previdenciários", "name": "Benefícios previdenciários", "unit": "R$ milhões", "freq": "M", "block": "fiscal"},
+  {"id": "rtn_pessoal", "source": "rtn", "sheet": "1.1", "row": "4.2 Pessoal e Encargos Sociais", "name": "Pessoal e encargos sociais", "unit": "R$ milhões", "freq": "M", "block": "fiscal"},
+  {"id": "rtn_outras_obrigatorias", "source": "rtn", "sheet": "1.1", "row": "4.3 Outras Despesas Obrigatórias", "name": "Outras despesas obrigatórias", "unit": "R$ milhões", "freq": "M", "block": "fiscal"},
+  {"id": "rtn_programacao", "source": "rtn", "sheet": "1.1", "row": "4.4 Despesas do Poder Executivo Sujeitas à Programação Financeira", "name": "Despesas sujeitas à programação financeira", "unit": "R$ milhões", "freq": "M", "block": "fiscal"},
+  {"id": "rtn_primario", "source": "rtn", "sheet": "1.1", "row": "5. RESULTADO PRIMÁRIO GOVERNO CENTRAL - ACIMA DA LINHA", "name": "Resultado primário do Governo Central, acima da linha", "unit": "R$ milhões", "freq": "M", "block": "fiscal"}
 ]

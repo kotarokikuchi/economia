@@ -3,13 +3,17 @@
 
 Uso: python3 collector/collect.py [id ...]   (sem ids, coleta o catálogo inteiro)
 """
+import io
 import json
 import os
+import re
 import sqlite3
 import sys
 import time
 import urllib.error
 import urllib.request
+import xml.etree.ElementTree as ET
+import zipfile
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
@@ -21,6 +25,9 @@ START = date(1994, 7, 1)  # início do Real
 BRT = timezone(timedelta(hours=-3))
 SGS_WINDOW_DAYS = 3650  # o SGS aceita no máximo 10 anos por consulta em séries diárias
 DAILY_REFRESH_DAYS = 30
+TESOURO = "https://www.tesourotransparente.gov.br/"
+RTN_PACKAGE = TESOURO + "ckan/api/3/action/package_show?id=resultado-do-tesouro-nacional"
+XLSX_MAX_BYTES = 200 * 1024 * 1024  # limite do conteúdo descompactado de uma planilha baixada
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS series (
@@ -46,21 +53,25 @@ CREATE TABLE IF NOT EXISTS observations (
 
 # ---------- rede ----------
 
-def http_get_json(url):
+def http_get(url):
     for attempt in range(3):
         try:
             req = urllib.request.Request(
                 url, headers={"User-Agent": "Mozilla/5.0 (compatible; data-collector)"}
             )
             with urllib.request.urlopen(req, timeout=60) as resp:
-                return json.load(resp)
+                return resp.read()
         except urllib.error.HTTPError as e:
             if e.code == 404 or attempt == 2:
                 raise
-        except (urllib.error.URLError, TimeoutError, json.JSONDecodeError):
+        except (urllib.error.URLError, TimeoutError):
             if attempt == 2:
                 raise
         time.sleep(2 * (attempt + 1))
+
+
+def http_get_json(url):
+    return json.loads(http_get(url))
 
 
 def windows(start, end, max_days):
@@ -122,6 +133,78 @@ def fetch_sidra(table, variable, categories):
         f"/p/all/c11255/{','.join(str(c) for c in categories)}"
     )
     return parse_sidra(http_get_json(url))
+
+
+# ---------- planilha do Tesouro (XLSX lido à mão: é um ZIP com XML dentro) ----------
+
+XLSX_MAIN = "{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
+XLSX_REL = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}"
+
+
+def read_xlsx_sheet(blob, sheet_name):
+    """Linhas de uma aba como dicts {coluna: texto}, com os textos compartilhados já resolvidos."""
+    archive = zipfile.ZipFile(io.BytesIO(blob))
+    if sum(info.file_size for info in archive.infolist()) > XLSX_MAX_BYTES:
+        raise ValueError("planilha maior que o limite aceito")
+    strings = [
+        "".join(t.text or "" for t in item.iter(XLSX_MAIN + "t"))
+        for item in ET.fromstring(archive.read("xl/sharedStrings.xml")).findall(XLSX_MAIN + "si")
+    ]
+    targets = {r.get("Id"): r.get("Target") for r in ET.fromstring(archive.read("xl/_rels/workbook.xml.rels"))}
+    sheets = {
+        sheet.get("name"): "xl/" + targets[sheet.get(XLSX_REL + "id")].removeprefix("/xl/")
+        for sheet in ET.fromstring(archive.read("xl/workbook.xml")).find(XLSX_MAIN + "sheets")
+    }
+    if sheet_name not in sheets:
+        raise ValueError(f"aba {sheet_name!r} não encontrada na planilha")
+    rows = []
+    for row in ET.fromstring(archive.read(sheets[sheet_name])).find(XLSX_MAIN + "sheetData"):
+        cells = {}
+        for cell in row:
+            value = cell.find(XLSX_MAIN + "v")
+            if value is not None:
+                column = re.match(r"[A-Z]+", cell.get("r")).group()
+                cells[column] = strings[int(value.text)] if cell.get("t") == "s" else value.text
+        rows.append(cells)
+    return rows
+
+
+def excel_date(serial):
+    return (date(1899, 12, 30) + timedelta(days=int(float(serial)))).isoformat()
+
+
+def parse_rtn(rows):
+    """Aba do RTN (linhas = rubricas, colunas = meses) -> {rubrica: [("aaaa-mm-01", valor)]}."""
+    header = next((r for r in rows if r.get("A") == "Discriminação"), None)
+    if header is None:
+        raise ValueError("cabeçalho 'Discriminação' não encontrado")
+    months = {column: excel_date(serial) for column, serial in header.items() if column != "A"}
+    by_label = {}
+    for row in rows:
+        label = " ".join(str(row.get("A", "")).split())  # o Tesouro varia os espaços entre código e nome
+        if label and row is not header:
+            by_label[label] = [(months[c], to_float(v)) for c, v in row.items() if c in months]
+    return by_label
+
+
+def pick_row(by_label, prefix):
+    """Rubrica cujo rótulo começa com `prefix`; falha se a planilha mudar e houver zero ou várias."""
+    matches = [rows for label, rows in by_label.items() if label.startswith(prefix)]
+    if len(matches) != 1:
+        raise ValueError(f"{len(matches)} linhas começam com {prefix!r} na planilha do Tesouro")
+    return matches[0]
+
+
+def fetch_rtn(sheet):
+    # O nome do arquivo muda todo mês; o endereço atual vem do catálogo do Tesouro.
+    resources = http_get_json(RTN_PACKAGE)["result"]["resources"]
+    url = next(
+        (r["url"] for r in resources if r.get("format") == "XLSX" and "Série Histórica" in r.get("name", "")),
+        None,
+    )
+    if not url or not url.startswith(TESOURO):
+        raise ValueError(f"endereço inesperado para a planilha do RTN: {url!r}")
+    return parse_rtn(read_xlsx_sheet(http_get(url), sheet))
 
 
 # ---------- banco ----------
@@ -213,22 +296,33 @@ def export(conn, export_dir):
 def fetch_all(conn, entries, today):
     """Devolve {id: linhas} em caso de sucesso ou {id: Exception} em caso de falha."""
     results = {}
-    sidra_groups = {}
+    groups = {}  # séries que saem de uma mesma chamada: uma tabela do SIDRA ou uma aba do RTN
     for entry in entries:
         if entry["source"] == "sidra":
-            sidra_groups.setdefault((entry["table"], entry["variable"]), []).append(entry)
-            continue
-        try:
-            start = daily_start(conn, entry["id"]) if entry["freq"] == "D" else START
-            results[entry["id"]] = fetch_sgs(entry["code"], entry["freq"], start, today)
-        except Exception as e:  # falha de uma série não interrompe as outras
-            results[entry["id"]] = e
+            groups.setdefault(("sidra", entry["table"], entry["variable"]), []).append(entry)
+        elif entry["source"] == "rtn":
+            groups.setdefault(("rtn", entry["sheet"]), []).append(entry)
+        else:
+            try:
+                start = daily_start(conn, entry["id"]) if entry["freq"] == "D" else START
+                results[entry["id"]] = fetch_sgs(entry["code"], entry["freq"], start, today)
+            except Exception as e:  # falha de uma série não interrompe as outras
+                results[entry["id"]] = e
 
-    for (table, variable), group in sidra_groups.items():
+    for (source, *key), group in groups.items():
         try:
-            by_category = fetch_sidra(table, variable, [e["category"] for e in group])
-            for entry in group:
-                results[entry["id"]] = by_category.get(str(entry["category"]), [])
+            if source == "sidra":
+                by_category = fetch_sidra(*key, [e["category"] for e in group])
+                rows = {e["id"]: by_category.get(str(e["category"]), []) for e in group}
+            else:
+                by_label = fetch_rtn(*key)
+                rows = {}
+                for e in group:
+                    try:
+                        rows[e["id"]] = pick_row(by_label, e["row"])
+                    except ValueError as error:
+                        rows[e["id"]] = error
+            results.update(rows)
         except Exception as e:
             for entry in group:
                 results[entry["id"]] = e

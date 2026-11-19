@@ -1,7 +1,9 @@
 """Testes sem rede. Rodar: python3 -m unittest discover collector"""
+import io
 import json
 import tempfile
 import unittest
+import zipfile
 from datetime import date
 from pathlib import Path
 
@@ -46,6 +48,64 @@ class ParsingTest(unittest.TestCase):
         for (_, end), (start, _) in zip(spans, spans[1:]):
             self.assertEqual((start - end).days, 1)
         self.assertTrue(all((b - a).days < 3653 for a, b in spans))  # menos de 10 anos
+
+
+def make_xlsx(sheet_name, strings, sheet_rows):
+    """Monta em memória um XLSX mínimo. Células: ("s", índice do texto) ou ("n", número)."""
+    main = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+    rel = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+    cells = "".join(
+        f'<row r="{r}">' + "".join(
+            f'<c r="{col}{r}"' + (' t="s"' if kind == "s" else "") + f"><v>{value}</v></c>"
+            for col, (kind, value) in row.items()
+        ) + "</row>"
+        for r, row in enumerate(sheet_rows, start=1)
+    )
+    files = {
+        "xl/workbook.xml": f'<workbook xmlns="{main}" xmlns:r="{rel}"><sheets>'
+                           f'<sheet name="{sheet_name}" sheetId="1" r:id="rId1"/></sheets></workbook>',
+        "xl/_rels/workbook.xml.rels": '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+                                      '<Relationship Id="rId1" Target="worksheets/sheet1.xml"/></Relationships>',
+        "xl/sharedStrings.xml": f'<sst xmlns="{main}">' + "".join(f"<si><t>{t}</t></si>" for t in strings) + "</sst>",
+        "xl/worksheets/sheet1.xml": f'<worksheet xmlns="{main}"><sheetData>{cells}</sheetData></worksheet>',
+    }
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w") as archive:
+        for name, content in files.items():
+            archive.writestr(name, content)
+    return buffer.getvalue()
+
+
+class TreasurySheetTest(unittest.TestCase):
+    def setUp(self):
+        strings = ["Tabela 1.1", "Discriminação", "3. RECEITA LÍQUIDA  (1-2)", "4.1  Benefícios Previdenciários ", "4.1.01 Urbano"]
+        self.blob = make_xlsx("1.1", strings, [
+            {"A": ("s", 0)},
+            {"A": ("s", 1), "B": ("n", 35431), "C": ("n", 35462)},  # jan/1997 e fev/1997 como datas do Excel
+            {"A": ("s", 2), "B": ("n", "9789.2"), "C": ("n", "9664.4")},
+            {"A": ("s", 3), "B": ("n", "3402.2")},
+            {"A": ("s", 4), "B": ("n", "1.0"), "C": ("n", "2.0")},
+        ])
+
+    def test_reads_sheet_and_maps_rows_to_months(self):
+        by_label = collect.parse_rtn(collect.read_xlsx_sheet(self.blob, "1.1"))
+        self.assertEqual(
+            collect.pick_row(by_label, "3. RECEITA LÍQUIDA"),
+            [("1997-01-01", 9789.2), ("1997-02-01", 9664.4)],
+        )
+        # espaços variáveis entre código e nome não atrapalham; "4.1.01" não se confunde com "4.1 "
+        self.assertEqual(collect.pick_row(by_label, "4.1 Benefícios"), [("1997-01-01", 3402.2)])
+
+    def test_fails_loudly_when_layout_changes(self):
+        by_label = collect.parse_rtn(collect.read_xlsx_sheet(self.blob, "1.1"))
+        with self.assertRaises(ValueError):
+            collect.pick_row(by_label, "9. RUBRICA QUE NÃO EXISTE")
+        with self.assertRaises(ValueError):
+            collect.pick_row(by_label, "4.1")  # ambíguo: casa com 4.1 e 4.1.01
+        with self.assertRaises(ValueError):
+            collect.read_xlsx_sheet(self.blob, "9.9")
+        with self.assertRaises(ValueError):
+            collect.parse_rtn([{"A": "sem cabeçalho"}])
 
 
 class DatabaseTest(unittest.TestCase):
