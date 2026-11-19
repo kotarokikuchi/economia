@@ -130,6 +130,8 @@ O painel é de monitoramento. Projeções entram só por duas vias, sempre separ
 
 Fora: projeções do orçamento (PLOA, LDO) e modelos de previsão próprios.
 
+Situação em 2026-11-18: as expectativas do Focus aparecem em tabela na Visão geral e como linha tracejada no gráfico de inflação. Ainda não aparecem como continuação tracejada dos demais gráficos.
+
 ## 4. Identidades que ligam os blocos
 
 São o diferencial do painel em relação a uma coleção de gráficos soltos.
@@ -223,6 +225,21 @@ Séries acrescentadas na etapa 3, todas conferidas no catálogo do Banco Central
 Conferências com dados de set/2026: Tesouro (−2,11) + INSS (2,49) + Banco Central (0,01) = primário do Governo Central (0,39% do PIB, déficit); primário (0,39) + juros (8,26) = nominal (8,66), a menos de arredondamento.
 
 Planilha do Tesouro (Resultado do Tesouro Nacional, aba 1.1, R$ milhões, mensal): receita total, transferências por repartição, receita líquida, despesa total, benefícios previdenciários, pessoal, outras obrigatórias, despesas sujeitas à programação financeira e resultado primário acima da linha. As linhas são localizadas pelo começo do rótulo (por exemplo, "4.1 Benefícios Previdenciários"); se o Tesouro renomear uma rubrica, a série falha com erro explícito em vez de trazer dado errado. Conferido em jul/2026: receita líquida − despesa = primário, e as 4 rubricas de despesa somam a despesa total, sem resíduo. Em 12 meses, o primário do Tesouro (−72,7 bilhões) e o do Banco Central (−72,4 bilhões) diferem em R$ 0,25 bilhão.
+
+Séries acrescentadas na etapa 4:
+
+| Bloco | Código | Série | Início |
+|---|---|---|---|
+| Externo | 22885 | Investimento direto no país, líquido mensal, US$ milhões | 1995 |
+| Externo | 3546 | Reservas internacionais, mensal, US$ milhões **(confirmar o nome)** | antes de 1994 |
+| Preços | 13521 | Meta de inflação do ano, % **(confirmar o nome)**: fora do catálogo; os valores (3,00% desde 2024) batem com as metas conhecidas | 1999 |
+
+Boletim Focus (API Olinda), duas consultas:
+
+- `ExpectativasMercadoAnuais`: mediana da pesquisa mais recente para cada ano-calendário, de IPCA, PIB Total, Selic, Câmbio, Resultado primário e Dívida bruta do governo geral. É guardada como uma série por indicador, em que a "data" é o ano de referência; cada coleta sobrescreve com a pesquisa mais nova.
+- `ExpectativasMercadoInflacao12Meses`: série diária, desde dez/2001, da mediana suavizada do IPCA esperado para os 12 meses seguintes. Usada no juro real esperado.
+
+O juro real esperado do site é uma aproximação: meta Selic do fim do mês descontada da inflação esperada em 12 meses. O cálculo usual do mercado usa a taxa de contratos futuros de um ano, que não está coletada.
 
 Nas NFSP, sinal positivo é déficit. O site inverte o sinal, para déficit aparecer como número negativo. "Governo Federal e Banco Central" inclui o INSS e corresponde ao Governo Central.
 
@@ -340,7 +357,7 @@ Custos conhecidos de fazer em casa:
 | 1b | Módulo de gráficos em SVG e esqueleto do site (navegação, layout, celular). **Concluída em 2026-11-18**: gráficos de linha e de barras empilhadas, seletor de período, dica por mouse, toque e teclado, tabela de dados, temas claro e escuro; páginas Visão geral e Atividade | 3 dias |
 | 2 | Páginas de Atividade e Moeda. **Concluída em 2026-11-18**: 7 gráficos em Atividade e 4 em Moeda, com as identidades do PIB, da base monetária e do M1; catálogo com 60 séries. Ficou de fora a taxa de poupança (tabela 2072 do IBGE, ainda não coletada) | 1 dia |
 | 3 | Bloco fiscal e dívida (dados do Tesouro são os mais trabalhosos). **Concluída em 2026-11-18**: páginas Fiscal (5 gráficos e 2 identidades) e Dívida (3 gráficos); leitor próprio da planilha do Tesouro; catálogo com 85 séries. Ficaram de fora a comparação com a meta fiscal e o custo médio da dívida | 2 a 3 dias |
-| 4 | Visão geral, externo e preços | 1 dia |
+| 4 | Visão geral, externo e preços. **Concluída em 2026-11-18**: páginas Externo (5 gráficos) e Preços e juros (3 gráficos); Visão geral com 8 números e a tabela de expectativas do Focus; catálogo com 98 séries | 1 dia |
 | 5 | Simulador de dinâmica da dívida | meio dia |
 | 6 | Página de metodologia, revisão de textos e leitura em celular | 1 dia |
 | 7 | Dockerfile, `docker compose`, agendamento da coleta e HTTPS no servidor | 1 dia |
