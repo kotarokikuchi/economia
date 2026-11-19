@@ -146,6 +146,8 @@ Como as partes do painel se ligam no modelo (`site/js/model.js`, contas testadas
 - **Dívida**: cresce com o déficit e com os juros; a parcela atrelada à Selic (dado real) repassa a Selic de imediato ao custo da dívida.
 - **Externo**: o câmbio real e o crescimento mundial movem exportações e importações; inflação acima da meta por muito tempo tira competitividade.
 
+Ajuste direto no diagrama (acrescentado em 2026-11-18): a água de quatro tanques pode ser arrastada pela bolinha na superfície, com mouse, toque ou setas do teclado. Cada tanque move a válvula que mais diretamente controla o seu nível: Governo move o gasto, Famílias move os impostos, Investimento move a Selic e Exterior move o dólar. O site procura o valor da válvula que produz o nível pedido no ano mostrado (`solveLever`, testada) e os controles deslizantes acompanham. Renda, Poupança e Dívida não são arrastáveis, por serem resultado de várias válvulas ao mesmo tempo. Quando o nível pedido está fora do alcance da válvula, a água para no máximo que ela consegue.
+
 Limites, todos ditos na página e na Metodologia:
 
 - Os níveis de partida são dados reais; as 15 sensibilidades são valores didáticos escolhidos por mim, não estimados. Estão em `PARAMS`, em um só lugar, e aparecem em tabela na Metodologia.
