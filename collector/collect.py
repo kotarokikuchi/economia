@@ -5,6 +5,7 @@ Uso: python3 collector/collect.py [id ...]   (sem ids, coleta o catálogo inteir
 """
 import io
 import json
+import math
 import os
 import re
 import sqlite3
@@ -29,6 +30,7 @@ DAILY_REFRESH_DAYS = 30
 TESOURO = "https://www.tesourotransparente.gov.br/"
 RTN_PACKAGE = TESOURO + "ckan/api/3/action/package_show?id=resultado-do-tesouro-nacional"
 FOCUS = "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/"
+MAX_RESPONSE_BYTES = 100 * 1024 * 1024  # nenhuma resposta legítima das fontes chega perto disso
 XLSX_MAX_BYTES = 200 * 1024 * 1024  # limite do conteúdo descompactado de uma planilha baixada
 
 SCHEMA = """
@@ -62,7 +64,10 @@ def http_get(url):
                 url, headers={"User-Agent": "Mozilla/5.0 (compatible; data-collector)"}
             )
             with urllib.request.urlopen(req, timeout=60) as resp:
-                return resp.read()
+                body = resp.read(MAX_RESPONSE_BYTES + 1)
+            if len(body) > MAX_RESPONSE_BYTES:
+                raise ValueError("resposta maior que o limite aceito")
+            return body
         except urllib.error.HTTPError as e:
             if e.code == 404 or attempt == 2:
                 raise
@@ -248,6 +253,25 @@ def fetch_rtn(sheet):
     return parse_rtn(read_xlsx_sheet(http_get(url), sheet))
 
 
+# ---------- validação do que veio de fora ----------
+
+ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}")
+
+
+def check_rows(rows):
+    """Recusa a série inteira se alguma linha não for (data ISO, número finito ou None).
+
+    Os dados vêm de servidores de terceiros e acabam em arquivos lidos pelo site: só passam datas e números.
+    """
+    for row_date, value in rows:
+        if not (isinstance(row_date, str) and ISO_DATE.fullmatch(row_date)):
+            raise ValueError(f"data fora do formato esperado: {str(row_date)[:30]!r}")
+        if value is None:
+            continue
+        if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+            raise ValueError(f"valor não numérico em {row_date}")
+
+
 # ---------- banco ----------
 
 def open_db(path):
@@ -309,7 +333,7 @@ def store_error(conn, series_id, error, now):
 def write_json(path, obj):
     """Grava em arquivo temporário e renomeia: o site nunca lê um arquivo pela metade."""
     tmp = path.with_suffix(".tmp")
-    tmp.write_text(json.dumps(obj, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    tmp.write_text(json.dumps(obj, ensure_ascii=False, allow_nan=False, separators=(",", ":")), encoding="utf-8")
     os.replace(tmp, path)
 
 
@@ -333,6 +357,9 @@ def export(conn, export_dir, catalog=()):
     conn.row_factory = None
     for series in index:
         series["ref"] = refs.get(series["id"])
+        # O texto do erro fica só no banco: pode trazer detalhes internos que não cabem em arquivo público.
+        if series["error"]:
+            series["error"] = "falha na última coleta"
     for series in index:
         data = conn.execute(
             "SELECT date, value FROM observations WHERE series_id = ? ORDER BY date",
@@ -391,6 +418,11 @@ def fetch_all(conn, entries, today):
     for key, value in results.items():
         if value == []:
             results[key] = ValueError("a fonte não devolveu dados")
+        elif not isinstance(value, Exception):
+            try:
+                check_rows(value)
+            except ValueError as error:
+                results[key] = error
     return results
 
 

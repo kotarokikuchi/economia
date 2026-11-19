@@ -50,6 +50,29 @@ class ParsingTest(unittest.TestCase):
         self.assertTrue(all((b - a).days < 3653 for a, b in spans))  # menos de 10 anos
 
 
+class ValidationTest(unittest.TestCase):
+    def test_accepts_iso_dates_with_numbers_or_gaps(self):
+        collect.check_rows([("2026-01-01", 1.5), ("2026-02-01", None), ("2026-03-01", 3)])
+
+    def test_rejects_anything_that_is_not_a_date_and_a_finite_number(self):
+        for rows in (
+            [("01/02/2026", 1.0)],
+            [("2026-01-01<script>", 1.0)],
+            [(20260101, 1.0)],
+            [("2026-01-01", "1.0")],
+            [("2026-01-01", float("nan"))],
+            [("2026-01-01", float("inf"))],
+            [("2026-01-01", True)],
+        ):
+            with self.assertRaises(ValueError, msg=rows):
+                collect.check_rows(rows)
+
+    def test_text_that_parses_as_nan_does_not_reach_the_site(self):
+        rows = collect.parse_sgs([{"data": "01/06/2026", "valor": "nan"}], date(2026, 11, 18))
+        with self.assertRaises(ValueError):
+            collect.check_rows(rows)
+
+
 class FocusTest(unittest.TestCase):
     def test_parse_focus_annual_keeps_only_latest_survey(self):
         payload = {"value": [
@@ -183,6 +206,17 @@ class DatabaseTest(unittest.TestCase):
         self.assertEqual(index[0]["unit"], "R$ mil")
         self.assertEqual(index[0]["ref"], "Banco Central, SGS 27791")
         self.assertIsNone(index[0]["error"])
+
+    def test_export_hides_error_details(self):
+        collect.store(self.conn, "m1", [("2026-01-01", 1.0)], "t1")
+        collect.store_error(self.conn, "m1", OSError("/data/economia.db: disco cheio"), "t2")
+        with tempfile.TemporaryDirectory() as tmp:
+            collect.export(self.conn, Path(tmp), [M1])
+            exported = (Path(tmp) / "index.json").read_text(encoding="utf-8")
+        self.assertIn("falha na última coleta", exported)
+        self.assertNotIn("economia.db", exported)
+        # o detalhe continua no banco, para quem opera o servidor
+        self.assertIn("disco cheio", self.conn.execute("SELECT error FROM series").fetchone()[0])
 
 
 if __name__ == "__main__":
