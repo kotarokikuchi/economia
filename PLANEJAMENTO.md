@@ -453,15 +453,15 @@ Corrigido nesta checagem:
 - **Servidor**: cabeçalhos `Strict-Transport-Security` e `Permissions-Policy`.
 - **Contêineres**: o Caddy roda só com a capacidade de abrir as portas 80 e 443; a coleta roda sem nenhuma capacidade, sem root e com sistema de arquivos somente leitura.
 
-Pendente, bloqueia a abertura:
+Resolvido em 2026-11-19, bloqueava a abertura:
 
-- **Commit solto no GitHub com e-mail particular.** O primeiro commit do projeto foi feito com o e-mail global do git e recusado pelo GitHub; foi refeito com o e-mail `noreply`. O commit original não está em nenhuma branch, mas o GitHub o guardou e o devolve pelo endereço direto (`b0bcec8`). Enquanto o repositório é privado, só o dono o vê; se for aberto, qualquer pessoa que acerte o código do commit vê o e-mail. A forma segura de eliminá-lo é apagar o repositório no GitHub e criá-lo de novo a partir da cópia local, que só envia os commits das branches. Depois, conferir que o endereço do commit antigo responde 404.
+- **Commit solto no GitHub com e-mail particular.** O primeiro commit do projeto foi feito com o e-mail global do git e recusado pelo GitHub; foi refeito com o e-mail `noreply`. O commit original não estava em nenhuma branch, mas o GitHub o guardou e o devolvia pelo endereço direto. O repositório foi apagado e recriado como privado a partir da cópia local, da qual o commit antigo também foi removido. Conferido depois: o GitHub não encontra mais o commit antigo, os 31 commits chegaram e todos usam o `noreply` como autor e como committer.
+- **E-mail global do git**: trocado para o `noreply` do GitHub. Repositórios novos nesta máquina já nascem com ele.
 
 Pendente, não bloqueia:
 
 - **Licença**: não há arquivo de licença. Público sem licença, o código fica visível mas ninguém tem permissão legal de reutilizá-lo. Decidir entre manter assim ou adotar uma licença aberta.
 - **Depois de abrir**: ligar a varredura de segredos com bloqueio de push e a proteção da branch `main`, que o GitHub só oferece de graça em repositórios públicos.
 - **Imagens Docker** fixadas por versão (`python:3.14-slim`, `caddy:2-alpine`), não por resumo criptográfico. Aceitável; fixar por resumo dá mais garantia e exige atualização manual.
-- **E-mail global do git** desta máquina continua sendo o particular. Este repositório tem configuração própria com o `noreply`; uma cópia nova (outro clone) precisa repetir essa configuração antes do primeiro commit.
 - **O que não foi feito**: varredura com ferramenta especializada, teste de invasão e teste do HTTPS em servidor real.
 
