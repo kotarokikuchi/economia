@@ -67,6 +67,33 @@ export function rolling12(data) {
   return out;
 }
 
+/** Variação (%) contra `lag` períodos antes. Supõe série sem períodos faltando. */
+export function pctChange(data, lag) {
+  return data.slice(lag).map(([date, value], i) => {
+    const base = data[i][1];
+    return [date, value == null || !base ? null : (value / base - 1) * 100];
+  });
+}
+
+/** Soma móvel de n períodos; nula se faltar algum valor na janela. */
+export function rollingSum(data, n) {
+  const out = [];
+  for (let i = n - 1; i < data.length; i++) {
+    const window = data.slice(i - n + 1, i + 1).map(([, v]) => v);
+    out.push([data[i][0], window.includes(null) ? null : window.reduce((a, b) => a + b, 0)]);
+  }
+  return out;
+}
+
+/** Combina séries data a data: fn recebe um valor de cada série. Datas sem todos os valores ficam de fora. */
+export function combine(seriesList, fn) {
+  const [first, ...rest] = seriesList;
+  const maps = rest.map((d) => new Map(d));
+  return first
+    .filter(([date, value]) => value != null && maps.every((m) => m.get(date) != null))
+    .map(([date, value]) => [date, fn(value, ...maps.map((m) => m.get(date)))]);
+}
+
 /** Alinha várias séries em uma tabela: datas ordenadas e uma coluna de valores por série. */
 export function align(seriesData) {
   const dates = [...new Set(seriesData.flatMap((d) => d.map(([date]) => date)))].sort();

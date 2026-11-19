@@ -9,6 +9,7 @@
 //   series: [{ name, color: 'var(--series-1)', data: [[iso, valor]], dashed }],
 //   events: [{ date, label }]        // só em 'line': linhas verticais de mudança de regime
 //   zero: false                      // só em 'line': não forçar o zero no eixo
+//   totalLabel: 'PIB'                // só em 'bars': mostra a soma da coluna na dica e na tabela
 // }
 import { align, cutoff, nearestIndex, niceTicks, scaleLinear, stack, yearTicks } from './calc.js';
 import { fmtNumber, fmtPeriod, fmtTick } from './format.js';
@@ -64,6 +65,8 @@ function render(chart) {
   }
   const decimals = spec.decimals ?? 1;
   const isBars = spec.type === 'bars';
+  const suffix = { '%': '%', 'p.p.': ' p.p.' }[spec.unit] ?? '';
+  const total = (i) => cols.reduce((sum, col) => sum + (col[i] ?? 0), 0);
 
   if (series.length > 1) {
     const legend = html('ul', 'legend', null, el);
@@ -208,9 +211,14 @@ function render(chart) {
     series.forEach((s, k) => {
       const row = html('div', 'tooltip-row', null, tip);
       html('span', 'key', null, row).style.background = s.color;
-      html('strong', null, `${fmtNumber(cols[k][i], decimals)}${spec.unit === '%' ? '%' : ''}`, row);
+      html('strong', null, `${fmtNumber(cols[k][i], decimals)}${suffix}`, row);
       html('span', null, s.name, row);
     });
+    if (spec.totalLabel) {
+      const row = html('div', 'tooltip-row tooltip-total', null, tip);
+      html('strong', null, `${fmtNumber(total(i), decimals)}${suffix}`, row);
+      html('span', null, spec.totalLabel, row);
+    }
     if (isBars) {
       hover.wash.setAttribute('x', xs[i] - band / 2);
       hover.wash.setAttribute('visibility', 'visible');
@@ -254,12 +262,15 @@ function render(chart) {
     const table = html('table', null, null, html('div', 'table-scroll', null, details));
     const head = html('tr', null, null, html('thead', null, null, table));
     html('th', null, 'Período', head);
-    for (const s of series) html('th', null, spec.unit ? `${s.name} (${spec.unit})` : s.name, head);
+    const withUnit = (name) => (spec.unit ? `${name} (${spec.unit})` : name);
+    for (const s of series) html('th', null, withUnit(s.name), head);
+    if (spec.totalLabel) html('th', null, withUnit(spec.totalLabel), head);
     const body = html('tbody', null, null, table);
     for (let i = dates.length - 1; i >= 0; i--) {
       const row = html('tr', null, null, body);
       html('th', null, fmtPeriod(dates[i], spec.freq), row);
       cols.forEach((col) => html('td', null, fmtNumber(col[i], decimals), row));
+      if (spec.totalLabel) html('td', null, fmtNumber(total(i), decimals), row);
     }
   });
 }

@@ -14,6 +14,7 @@
       <nav aria-label="Seções">
         <a href="index.html">Visão geral</a>
         <a href="atividade.html" aria-current="page">Atividade</a>
+        <a href="moeda.html">Moeda</a>
       </nav>
     </div>
   </header>
@@ -44,10 +45,46 @@
     </section>
 
     <section class="card">
+      <h2>Crescimento no trimestre</h2>
+      <p class="subtitle">Variação real do PIB contra o trimestre imediatamente anterior, em %, com ajuste sazonal. É a medida mais sensível a mudanças recentes.</p>
+      <div class="chart" id="chart-quarterly"></div>
+      <p class="source" id="source-quarterly"></p>
+    </section>
+
+    <section class="card">
+      <h2>O que puxou o crescimento</h2>
+      <p class="subtitle">Contribuição de cada componente, em pontos percentuais, para o crescimento do PIB contra o mesmo trimestre do ano anterior. A soma das barras é o crescimento do PIB.</p>
+      <div class="chart" id="chart-contributions"></div>
+      <p class="source" id="source-contributions"></p>
+      <p class="source">Aproximação: peso do componente no PIB de um ano antes multiplicado pelo seu crescimento real. "Estoques e resíduo" é a diferença para o crescimento oficial do PIB.</p>
+    </section>
+
+    <section class="card">
       <h2>Quem compra o que o Brasil produz</h2>
       <p class="subtitle">Participação de cada componente no PIB do trimestre, em % (valores correntes). Exportações líquidas negativas aparecem abaixo de zero.</p>
       <div class="chart" id="chart-shares"></div>
       <p class="source" id="source-shares"></p>
+    </section>
+
+    <section class="card">
+      <h2>Taxa de investimento</h2>
+      <p class="subtitle">Formação bruta de capital fixo (máquinas, construção e outros ativos) como % do PIB, acumulados em 4 trimestres. O eixo não começa em zero.</p>
+      <div class="chart" id="chart-investment"></div>
+      <p class="source" id="source-investment"></p>
+    </section>
+
+    <section class="card">
+      <h2>Crescimento por setor</h2>
+      <p class="subtitle">O mesmo PIB visto por quem produz. Variação real acumulada em 4 trimestres, em %.</p>
+      <div class="chart" id="chart-sectors"></div>
+      <p class="source" id="source-sectors"></p>
+    </section>
+
+    <section class="card">
+      <h2>Prévia mensal do PIB (IBC-Br)</h2>
+      <p class="subtitle">Índice de atividade calculado pelo Banco Central, com ajuste sazonal (2022 = 100). Sai todo mês, antes do PIB trimestral do IBGE. O eixo não começa em zero.</p>
+      <div class="chart" id="chart-ibc"></div>
+      <p class="source" id="source-ibc"></p>
     </section>
   </main>
 

@@ -2,7 +2,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { align, compound, cutoff, nearestIndex, niceTicks, rolling12, scaleLinear, stack, yearTicks } from '../site/js/calc.js';
+import {
+  align, combine, compound, cutoff, nearestIndex, niceTicks, pctChange, rolling12, rollingSum, scaleLinear, stack, yearTicks,
+} from '../site/js/calc.js';
 import { fmtNumber, fmtPeriod, fmtTick } from '../site/js/format.js';
 
 test('niceTicks cobre o intervalo com passos redondos', () => {
@@ -63,6 +65,25 @@ test('compound e rolling12 acumulam variações percentuais', () => {
 test('rolling12 devolve nulo quando falta um mês na janela', () => {
   const monthly = Array.from({ length: 12 }, (_, i) => [`m${i}`, i === 5 ? null : 1]);
   assert.equal(rolling12(monthly)[0][1], null);
+});
+
+test('pctChange compara com o período de lag anterior', () => {
+  const data = [['a', 100], ['b', 110], ['c', null], ['d', 121], ['e', 0], ['f', 5]];
+  assert.deepEqual(pctChange(data, 1).map(([d, v]) => [d, v == null ? null : Math.round(v)]),
+    [['b', 10], ['c', null], ['d', null], ['e', -100], ['f', null]]);
+  assert.deepEqual(pctChange(data, 3).map(([d, v]) => [d, v == null ? null : Math.round(v)]),
+    [['d', 21], ['e', -100], ['f', null]]);
+});
+
+test('rollingSum soma a janela e propaga nulos', () => {
+  assert.deepEqual(rollingSum([['a', 1], ['b', 2], ['c', 3], ['d', null], ['e', 5]], 2),
+    [['b', 3], ['c', 5], ['d', null], ['e', null]]);
+});
+
+test('combine opera data a data e descarta datas incompletas', () => {
+  const m1 = [['2026-08-01', 600], ['2026-09-01', 650], ['2026-10-01', null]];
+  const base = [['2026-09-01', 325], ['2026-10-01', 330], ['2026-07-01', 300]];
+  assert.deepEqual(combine([m1, base], (a, b) => a / b), [['2026-09-01', 2]]);
 });
 
 test('align une datas e preenche lacunas com nulo', () => {
