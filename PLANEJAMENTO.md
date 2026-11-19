@@ -134,6 +134,26 @@ Fora: projeções do orçamento (PLOA, LDO) e modelos de previsão próprios.
 
 Situação em 2026-11-18: as expectativas do Focus aparecem em tabela na Visão geral e como linha tracejada no gráfico de inflação. Ainda não aparecem como continuação tracejada dos demais gráficos.
 
+### 3.7 Simulador da economia (aba Simulador)
+
+Uma máquina de água no navegador, inspirada na máquina hidráulica de Bill Phillips (MONIAC, 1949). A renda do país fica em um reservatório no alto e escoa para governo (impostos), famílias (consumo), poupança e exterior (importações); a poupança financia o investimento e o déficit do governo; tudo o que é gasto volta ao topo como a renda do ano seguinte.
+
+Como as partes do painel se ligam no modelo (`site/js/model.js`, contas testadas em `tests/model.test.js`):
+
+- **Atividade**: `Y = C + I + G + (X − M)` é resolvida a cada ano; os fluxos de partida são os dos últimos 4 trimestres.
+- **Preços e juros**: a Selic escolhida fixa o juro real, que reduz consumo e investimento. A inflação reage ao aquecimento da economia e ao dólar, e tende à meta.
+- **Fiscal**: os impostos acompanham a renda; o gasto é escolhido. O déficit a mais disputa o crédito com o investimento no ano seguinte.
+- **Dívida**: cresce com o déficit e com os juros; a parcela atrelada à Selic (dado real) repassa a Selic de imediato ao custo da dívida.
+- **Externo**: o câmbio real e o crescimento mundial movem exportações e importações; inflação acima da meta por muito tempo tira competitividade.
+
+Limites, todos ditos na página e na Metodologia:
+
+- Os níveis de partida são dados reais; as 15 sensibilidades são valores didáticos escolhidos por mim, não estimados. Estão em `PARAMS`, em um só lugar, e aparecem em tabela na Metodologia.
+- "Impostos" são líquidos de aposentadorias e benefícios, e o modelo junta o consumo dos três níveis de governo com o resultado primário do Governo Central.
+- O cenário "sem mudanças" mantém por 10 anos o juro real e o primário de hoje e leva a dívida a cerca de 133% do PIB em 2036, acima dos cerca de 102% que o Focus espera para 2035. O gráfico de dívida mostra as duas linhas.
+- No celular, o diagrama rola para o lado dentro do próprio quadro; os mesmos números estão nos quadros e tabelas abaixo dele.
+- A água nos canos é animada, exceto para quem pede menos movimento no sistema. É a única animação do site.
+
 ## 4. Identidades que ligam os blocos
 
 São o diferencial do painel em relação a uma coleção de gráficos soltos.
@@ -371,6 +391,7 @@ Custos conhecidos de fazer em casa:
 | 5 | Simulador de dinâmica da dívida. **Concluída em 2026-11-18**: na página Dívida, com três controles (juro real, crescimento, primário), trajetória de 10 anos, primário que estabiliza a dívida e comparação com a expectativa do Focus | meio dia |
 | 6 | Página de metodologia, revisão de textos e leitura em celular. **Concluída em 2026-11-18**: página Metodologia e fontes, com a tabela das 98 séries gerada a partir da coleta; link "pular para o conteúdo", ícone do site e texto de fonte com contraste maior; as 8 páginas verificadas em 390 px e 1100 px | 1 dia |
 | 7 | Dockerfile, `docker compose`, agendamento da coleta e HTTPS no servidor. **Preparada e testada localmente em 2026-11-18**: imagens construídas, coleta de 98 séries dentro do contêiner, 8 páginas servidas pelo Caddy sem erros. Falta fazer no servidor, quando ele existir: ligar o HTTPS com o domínio e agendar a coleta | 1 dia |
+| 8 | Simulador da economia em tanques interligados (pedido em 2026-11-18, a partir de um desenho à mão). **Concluída em 2026-11-18**: aba Simulador, com 5 válvulas, 6 atalhos de cenário, passagem do tempo em 10 anos, 6 números de destaque e 4 gráficos | 1 dia |
 
 As etapas 0 a 6 acontecem todas na máquina local. A etapa 7 só começa quando houver servidor.
 
