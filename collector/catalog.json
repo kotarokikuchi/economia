@@ -54,5 +54,9 @@
   {"id": "ipca_mensal", "source": "sgs", "code": 433, "name": "IPCA, variação mensal", "unit": "%", "freq": "M", "block": "precos"},
   {"id": "pib_mensal", "source": "sgs", "code": 4380, "name": "PIB mensal, valores correntes", "unit": "R$ milhões", "freq": "M", "block": "atividade"},
   {"id": "cambio_dolar", "source": "sgs", "code": 1, "name": "Dólar (venda)", "unit": "R$/US$", "freq": "D", "block": "externo"},
-  {"id": "meta_selic", "source": "sgs", "code": 432, "name": "Meta Selic", "unit": "% a.a.", "freq": "D", "block": "juros"}
+  {"id": "meta_selic", "source": "sgs", "code": 432, "name": "Meta Selic", "unit": "% a.a.", "freq": "D", "block": "juros"},
+  {"id": "agropecuaria_taxa_4tri", "source": "sidra", "table": 5932, "variable": 6562, "category": 90687, "name": "Agropecuária, variação acumulada em 4 trimestres", "unit": "%", "freq": "Q", "block": "atividade"},
+  {"id": "industria_taxa_4tri", "source": "sidra", "table": 5932, "variable": 6562, "category": 90691, "name": "Indústria, variação acumulada em 4 trimestres", "unit": "%", "freq": "Q", "block": "atividade"},
+  {"id": "servicos_taxa_4tri", "source": "sidra", "table": 5932, "variable": 6562, "category": 90696, "name": "Serviços, variação acumulada em 4 trimestres", "unit": "%", "freq": "Q", "block": "atividade"},
+  {"id": "ibc_br", "source": "sgs", "code": 24364, "name": "IBC-Br com ajuste sazonal", "unit": "índice (2022 = 100)", "freq": "M", "block": "atividade"}
 ]
