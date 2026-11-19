@@ -58,5 +58,21 @@
   {"id": "agropecuaria_taxa_4tri", "source": "sidra", "table": 5932, "variable": 6562, "category": 90687, "name": "Agropecuária, variação acumulada em 4 trimestres", "unit": "%", "freq": "Q", "block": "atividade"},
   {"id": "industria_taxa_4tri", "source": "sidra", "table": 5932, "variable": 6562, "category": 90691, "name": "Indústria, variação acumulada em 4 trimestres", "unit": "%", "freq": "Q", "block": "atividade"},
   {"id": "servicos_taxa_4tri", "source": "sidra", "table": 5932, "variable": 6562, "category": 90696, "name": "Serviços, variação acumulada em 4 trimestres", "unit": "%", "freq": "Q", "block": "atividade"},
-  {"id": "ibc_br", "source": "sgs", "code": 24364, "name": "IBC-Br com ajuste sazonal", "unit": "índice (2022 = 100)", "freq": "M", "block": "atividade"}
+  {"id": "ibc_br", "source": "sgs", "code": 24364, "name": "IBC-Br com ajuste sazonal", "unit": "índice (2022 = 100)", "freq": "M", "block": "atividade"},
+  {"id": "primario_gc_pib", "source": "sgs", "code": 5783, "name": "Resultado primário do Governo Central, 12 meses (NFSP; positivo = déficit)", "unit": "% do PIB", "freq": "M", "block": "fiscal"},
+  {"id": "nominal_gc_pib", "source": "sgs", "code": 5717, "name": "Resultado nominal do Governo Central, 12 meses (NFSP; positivo = déficit)", "unit": "% do PIB", "freq": "M", "block": "fiscal"},
+  {"id": "juros_gc_pib", "source": "sgs", "code": 5750, "name": "Juros nominais do Governo Central, 12 meses", "unit": "% do PIB", "freq": "M", "block": "fiscal"},
+  {"id": "primario_tesouro_pib", "source": "sgs", "code": 7869, "name": "Resultado primário do Governo Federal sem INSS, 12 meses (NFSP; positivo = déficit)", "unit": "% do PIB", "freq": "M", "block": "fiscal"},
+  {"id": "primario_inss_pib", "source": "sgs", "code": 7870, "name": "Resultado primário do INSS, 12 meses (NFSP; positivo = déficit)", "unit": "% do PIB", "freq": "M", "block": "fiscal"},
+  {"id": "primario_bc_pib", "source": "sgs", "code": 5785, "name": "Resultado primário do Banco Central, 12 meses (NFSP; positivo = déficit)", "unit": "% do PIB", "freq": "M", "block": "fiscal"},
+  {"id": "primario_gc", "source": "sgs", "code": 4639, "name": "Resultado primário do Governo Central, fluxo mensal (NFSP; positivo = déficit)", "unit": "R$ milhões", "freq": "M", "block": "fiscal"},
+  {"id": "nominal_gc", "source": "sgs", "code": 4573, "name": "Resultado nominal do Governo Central, fluxo mensal (NFSP; positivo = déficit)", "unit": "R$ milhões", "freq": "M", "block": "fiscal"},
+  {"id": "juros_gc", "source": "sgs", "code": 4606, "name": "Juros nominais do Governo Central, fluxo mensal", "unit": "R$ milhões", "freq": "M", "block": "fiscal"},
+  {"id": "dbgg_pib", "source": "sgs", "code": 13762, "name": "Dívida Bruta do Governo Geral", "unit": "% do PIB", "freq": "M", "block": "divida"},
+  {"id": "dlsp_pib", "source": "sgs", "code": 4513, "name": "Dívida Líquida do Setor Público", "unit": "% do PIB", "freq": "M", "block": "divida"},
+  {"id": "divida_selic", "source": "sgs", "code": 4177, "name": "Dívida mobiliária federal indexada à Selic", "unit": "% do total", "freq": "M", "block": "divida"},
+  {"id": "divida_prefixado", "source": "sgs", "code": 4178, "name": "Dívida mobiliária federal prefixada", "unit": "% do total", "freq": "M", "block": "divida"},
+  {"id": "divida_ipca", "source": "sgs", "code": 12001, "name": "Dívida mobiliária federal indexada ao IPCA", "unit": "% do total", "freq": "M", "block": "divida"},
+  {"id": "divida_cambio", "source": "sgs", "code": 4173, "name": "Dívida mobiliária federal indexada ao câmbio", "unit": "% do total", "freq": "M", "block": "divida"},
+  {"id": "divida_prazo_medio", "source": "sgs", "code": 10618, "name": "Prazo médio da dívida mobiliária federal", "unit": "meses", "freq": "M", "block": "divida"}
 ]
