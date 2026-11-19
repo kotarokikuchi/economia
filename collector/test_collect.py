@@ -50,6 +50,24 @@ class ParsingTest(unittest.TestCase):
         self.assertTrue(all((b - a).days < 3653 for a, b in spans))  # menos de 10 anos
 
 
+class FocusTest(unittest.TestCase):
+    def test_parse_focus_annual_keeps_only_latest_survey(self):
+        payload = {"value": [
+            {"Data": "2026-11-13", "DataReferencia": "2027", "Mediana": 5.0},
+            {"Data": "2026-11-13", "DataReferencia": "2026", "Mediana": 5.11},
+            {"Data": "2026-11-06", "DataReferencia": "2026", "Mediana": 5.2},
+        ]}
+        self.assertEqual(collect.parse_focus_annual(payload), [("2026-01-01", 5.11), ("2027-01-01", 5.0)])
+        self.assertEqual(collect.parse_focus_annual({"value": []}), [])
+
+    def test_focus_url_encodes_filter(self):
+        url = collect.focus_url("ExpectativasMercadoAnuais", filter="Indicador eq 'PIB Total'", top=5)
+        self.assertEqual(
+            url,
+            collect.FOCUS + "ExpectativasMercadoAnuais?$filter=Indicador%20eq%20'PIB%20Total'&$top=5&$format=json",
+        )
+
+
 def make_xlsx(sheet_name, strings, sheet_rows):
     """Monta em memória um XLSX mínimo. Células: ("s", índice do texto) ou ("n", número)."""
     main = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"

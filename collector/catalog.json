@@ -83,5 +83,18 @@
   {"id": "rtn_pessoal", "source": "rtn", "sheet": "1.1", "row": "4.2 Pessoal e Encargos Sociais", "name": "Pessoal e encargos sociais", "unit": "R$ milhões", "freq": "M", "block": "fiscal"},
   {"id": "rtn_outras_obrigatorias", "source": "rtn", "sheet": "1.1", "row": "4.3 Outras Despesas Obrigatórias", "name": "Outras despesas obrigatórias", "unit": "R$ milhões", "freq": "M", "block": "fiscal"},
   {"id": "rtn_programacao", "source": "rtn", "sheet": "1.1", "row": "4.4 Despesas do Poder Executivo Sujeitas à Programação Financeira", "name": "Despesas sujeitas à programação financeira", "unit": "R$ milhões", "freq": "M", "block": "fiscal"},
-  {"id": "rtn_primario", "source": "rtn", "sheet": "1.1", "row": "5. RESULTADO PRIMÁRIO GOVERNO CENTRAL - ACIMA DA LINHA", "name": "Resultado primário do Governo Central, acima da linha", "unit": "R$ milhões", "freq": "M", "block": "fiscal"}
+  {"id": "rtn_primario", "source": "rtn", "sheet": "1.1", "row": "5. RESULTADO PRIMÁRIO GOVERNO CENTRAL - ACIMA DA LINHA", "name": "Resultado primário do Governo Central, acima da linha", "unit": "R$ milhões", "freq": "M", "block": "fiscal"},
+  {"id": "balanca_comercial", "source": "sgs", "code": 22707, "name": "Balança comercial, saldo mensal", "unit": "US$ milhões", "freq": "M", "block": "externo"},
+  {"id": "transacoes_correntes", "source": "sgs", "code": 22701, "name": "Transações correntes, saldo mensal", "unit": "US$ milhões", "freq": "M", "block": "externo"},
+  {"id": "transacoes_correntes_pib", "source": "sgs", "code": 23079, "name": "Transações correntes, 12 meses", "unit": "% do PIB", "freq": "M", "block": "externo"},
+  {"id": "idp", "source": "sgs", "code": 22885, "name": "Investimento direto no país, líquido mensal", "unit": "US$ milhões", "freq": "M", "block": "externo"},
+  {"id": "reservas", "source": "sgs", "code": 3546, "name": "Reservas internacionais", "unit": "US$ milhões", "freq": "M", "block": "externo"},
+  {"id": "meta_inflacao", "source": "sgs", "code": 13521, "name": "Meta de inflação", "unit": "% a.a.", "freq": "A", "block": "precos"},
+  {"id": "focus_ipca_12m", "source": "focus12", "indicator": "IPCA", "name": "Expectativa de mercado para o IPCA nos 12 meses seguintes", "unit": "%", "freq": "D", "block": "precos"},
+  {"id": "focus_ipca", "source": "focus", "indicator": "IPCA", "name": "Expectativa de mercado: inflação (IPCA) no ano", "unit": "%", "freq": "A", "block": "expectativas"},
+  {"id": "focus_pib", "source": "focus", "indicator": "PIB Total", "name": "Expectativa de mercado: crescimento do PIB no ano", "unit": "%", "freq": "A", "block": "expectativas"},
+  {"id": "focus_selic", "source": "focus", "indicator": "Selic", "name": "Expectativa de mercado: meta Selic no fim do ano", "unit": "% a.a.", "freq": "A", "block": "expectativas"},
+  {"id": "focus_cambio", "source": "focus", "indicator": "Câmbio", "name": "Expectativa de mercado: dólar no fim do ano", "unit": "R$/US$", "freq": "A", "block": "expectativas"},
+  {"id": "focus_primario", "source": "focus", "indicator": "Resultado primário", "name": "Expectativa de mercado: resultado primário no ano", "unit": "% do PIB", "freq": "A", "block": "expectativas"},
+  {"id": "focus_dbgg", "source": "focus", "indicator": "Dívida bruta do governo geral", "name": "Expectativa de mercado: dívida bruta no fim do ano", "unit": "% do PIB", "freq": "A", "block": "expectativas"}
 ]

@@ -11,6 +11,7 @@ import sqlite3
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 import zipfile
@@ -27,6 +28,7 @@ SGS_WINDOW_DAYS = 3650  # o SGS aceita no máximo 10 anos por consulta em série
 DAILY_REFRESH_DAYS = 30
 TESOURO = "https://www.tesourotransparente.gov.br/"
 RTN_PACKAGE = TESOURO + "ckan/api/3/action/package_show?id=resultado-do-tesouro-nacional"
+FOCUS = "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/"
 XLSX_MAX_BYTES = 200 * 1024 * 1024  # limite do conteúdo descompactado de uma planilha baixada
 
 SCHEMA = """
@@ -133,6 +135,45 @@ def fetch_sidra(table, variable, categories):
         f"/p/all/c11255/{','.join(str(c) for c in categories)}"
     )
     return parse_sidra(http_get_json(url))
+
+
+# ---------- expectativas de mercado (Boletim Focus, API Olinda do Banco Central) ----------
+
+def focus_url(resource, **params):
+    query = urllib.parse.urlencode(
+        {f"${key}": value for key, value in params.items()} | {"$format": "json"},
+        quote_via=urllib.parse.quote, safe="$',",
+    )
+    return f"{FOCUS}{resource}?{query}"
+
+
+def parse_focus_annual(payload):
+    """Pesquisa mais recente -> [("aaaa-01-01", mediana)], uma linha por ano de referência."""
+    rows = payload["value"]
+    latest = max((row["Data"] for row in rows), default=None)
+    return sorted(
+        (f"{row['DataReferencia']}-01-01", row["Mediana"]) for row in rows if row["Data"] == latest
+    )
+
+
+def fetch_focus_annual(indicator, today):
+    """Mediana das expectativas para cada ano-calendário, na pesquisa mais recente."""
+    since = today - timedelta(days=21)
+    return parse_focus_annual(http_get_json(focus_url(
+        "ExpectativasMercadoAnuais",
+        filter=f"Indicador eq '{indicator}' and Data ge '{since.isoformat()}' and baseCalculo eq 0",
+        select="Data,DataReferencia,Mediana", orderby="Data desc", top=200,
+    )))
+
+
+def fetch_focus_12m(indicator, start):
+    """Série diária da mediana da inflação esperada para os 12 meses seguintes (suavizada)."""
+    payload = http_get_json(focus_url(
+        "ExpectativasMercadoInflacao12Meses",
+        filter=f"Indicador eq '{indicator}' and Suavizada eq 'S' and baseCalculo eq 0 and Data ge '{start.isoformat()}'",
+        select="Data,Mediana", orderby="Data asc",
+    ))
+    return [(row["Data"], row["Mediana"]) for row in payload["value"]]
 
 
 # ---------- planilha do Tesouro (XLSX lido à mão: é um ZIP com XML dentro) ----------
@@ -305,7 +346,12 @@ def fetch_all(conn, entries, today):
         else:
             try:
                 start = daily_start(conn, entry["id"]) if entry["freq"] == "D" else START
-                results[entry["id"]] = fetch_sgs(entry["code"], entry["freq"], start, today)
+                if entry["source"] == "focus":
+                    results[entry["id"]] = fetch_focus_annual(entry["indicator"], today)
+                elif entry["source"] == "focus12":
+                    results[entry["id"]] = fetch_focus_12m(entry["indicator"], start)
+                else:
+                    results[entry["id"]] = fetch_sgs(entry["code"], entry["freq"], start, today)
             except Exception as e:  # falha de uma série não interrompe as outras
                 results[entry["id"]] = e
 
